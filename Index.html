@@ -1,0 +1,1202 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nirmedix Pharma Pvt. Ltd. — Pharmaceutical Excellence</title>
+<meta name="description" content="Premium pharmaceutical marketing company supplying WHO-GMP certified formulations across India.">
+<meta property="og:title" content="Nirmedix Pharma Pvt. Ltd.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Nunito+Sans:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* ═══ VARIABLES ═══ */
+:root{
+  --navy:#00224A;--navy-l:#003370;--navy-d:#001228;
+  --teal:#00B4D8;--teal-l:#90E0EF;--teal-glow:rgba(0,180,216,0.3);
+  --white:#FFF;--off:#F4F7FB;--light:#E8EEF6;
+  --text:#0A1628;--mid:#3D5A80;--muted:#8899AA;
+  --border:rgba(0,34,74,0.1);
+  --glass:rgba(255,255,255,0.07);--glass-b:rgba(255,255,255,0.13);
+  --r:14px;--shadow:0 8px 40px rgba(0,34,74,0.12);
+  --tr:0.3s cubic-bezier(.4,0,.2,1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Nunito Sans',sans-serif;background:var(--white);color:var(--text);overflow-x:hidden;}
+
+/* ═══ SKELETON LOADING ═══ */
+.skel{
+  background:linear-gradient(90deg,#e8eef6 25%,#d4dde9 50%,#e8eef6 75%);
+  background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px;
+}
+@keyframes shimmer{from{background-position:200% 0}to{background-position:-200% 0}}
+.skel-text{height:1em;border-radius:4px;margin-bottom:.5rem;}
+.skel-block{border-radius:var(--r);}
+
+/* ═══ NAVBAR ═══ */
+#navbar{
+  position:fixed;top:0;left:0;right:0;z-index:900;
+  background:rgba(0,15,35,0.97);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border-bottom:1px solid rgba(0,180,216,0.15);transition:box-shadow var(--tr);
+}
+#navbar.scrolled{box-shadow:0 4px 40px rgba(0,0,0,.4);}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:72px;max-width:1400px;margin:0 auto;padding:0 5%;}
+.nav-logo{display:flex;align-items:center;gap:.7rem;cursor:pointer;text-decoration:none;border:none;background:none;}
+.logo-mark{width:40px;height:40px;background:linear-gradient(135deg,var(--teal),#0077B6);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:600;font-size:1.1rem;color:white;box-shadow:0 4px 20px rgba(0,180,216,0.4);flex-shrink:0;}
+.logo-name{font-family:'Playfair Display',serif;font-size:1.1rem;color:white;line-height:1.15;}
+.logo-sub{font-size:.58rem;font-family:'Nunito Sans',sans-serif;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal-l);opacity:.75;}
+.nav-links{display:flex;align-items:center;gap:1.75rem;}
+.nav-btn{color:rgba(255,255,255,.7);font-size:.76rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:color var(--tr);position:relative;padding:.4rem 0;background:none;border:none;font-family:'Nunito Sans',sans-serif;}
+.nav-btn::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;background:var(--teal);transform:scaleX(0);transition:transform var(--tr);transform-origin:left;}
+.nav-btn:hover,.nav-btn.active{color:var(--teal);}
+.nav-btn:hover::after,.nav-btn.active::after{transform:scaleX(1);}
+.nav-cta{background:var(--teal);color:var(--navy-d);font-size:.75rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:.6rem 1.35rem;border-radius:6px;border:none;cursor:pointer;transition:all var(--tr);font-family:'Nunito Sans',sans-serif;}
+.nav-cta:hover{background:#00C9F5;transform:translateY(-1px);box-shadow:0 6px 24px var(--teal-glow);}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px;}
+.hamburger span{display:block;width:24px;height:2px;background:white;border-radius:2px;transition:all var(--tr);}
+.logo-img{height:75px;width:auto;object-fit:contain;}
+
+/* Mobile Drawer */
+.mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:895;}
+.mob-overlay.open{display:block;}
+.mob-drawer{position:fixed;top:0;left:0;bottom:0;width:300px;background:var(--navy-d);z-index:896;transform:translateX(-100%);transition:transform var(--tr);display:flex;flex-direction:column;padding:1.5rem;border-right:1px solid rgba(0,180,216,.2);}
+.mob-drawer.open{transform:translateX(0);}
+.drawer-x{align-self:flex-end;background:none;border:none;color:white;font-size:1.5rem;cursor:pointer;margin-bottom:1rem;}
+.drawer-btn{color:rgba(255,255,255,.8);font-size:1rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:1rem 0;border-bottom:1px solid rgba(255,255,255,.07);cursor:pointer;transition:color var(--tr);background:none;border-top:none;text-align:left;width:100%;font-family:'Nunito Sans',sans-serif;}
+.drawer-btn:hover{color:var(--teal);}
+
+/* ═══ HERO ═══ */
+.hero{min-height:100vh;padding-top:72px;background:linear-gradient(135deg,#000e1f 0%,#001835 40%,#002456 70%,#003070 100%);position:relative;overflow:hidden;display:flex;align-items:center;}
+.hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(rgba(0,180,216,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,180,216,.04) 1px,transparent 1px);background-size:60px 60px;}
+.hero-orb{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;}
+.orb-a{width:700px;height:700px;background:rgba(0,180,216,.1);top:-250px;right:-150px;animation:drift 11s ease-in-out infinite;}
+.orb-b{width:450px;height:450px;background:rgba(0,119,182,.14);bottom:-100px;left:-80px;animation:drift 14s ease-in-out infinite reverse;}
+.orb-c{width:320px;height:320px;background:rgba(0,180,216,.07);top:45%;left:45%;animation:drift 9s ease-in-out infinite;}
+@keyframes drift{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-28px) scale(1.04)}}
+
+.hero-inner{max-width:1400px;margin:0 auto;padding:3rem 5%;display:grid;grid-template-columns:1.1fr .9fr;gap:4rem;align-items:center;width:100%;position:relative;z-index:1;}
+.hero-inner > div { min-width: 0; width: 100%; } /* Fixes CSS grid blowout on mobile */
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,180,216,.1);border:1px solid rgba(0,180,216,.3);border-radius:100px;padding:.4rem 1rem;font-size:.7rem;font-weight:700;color:var(--teal-l);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.25rem;}
+.pulse{width:6px;height:6px;background:var(--teal);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.hero-h{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,8vw,4.4rem);line-height:1.07;color:white;margin-bottom:1.3rem;overflow-wrap:break-word;}
+.hero-h .accent{color:var(--teal);font-style:italic;}
+.hero-p{color:rgba(255,255,255,.6);font-size:.97rem;line-height:1.82;max-width:500px;margin-bottom:2rem;font-weight:400;}
+.hero-btns{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+.hero-slider{overflow:hidden;border-radius:14px;position:relative;width:100%;}
+.hero-slider-track{display:flex;transition:transform .6s cubic-bezier(.4,0,.2,1);}
+.hero-slide{min-width:100%;flex-shrink:0;}
+.hero-slide .feat-mini{margin-bottom:0;}
+.hero-slider-dots{display:flex;gap:6px;justify-content:center;margin-top:.6rem;}
+.hero-slider-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:all .3s;}
+.hero-slider-dot.active{background:var(--teal);width:18px;border-radius:3px;}
+/* Allow cert grid to wrap and show ALL certs */
+.cert-grid{display:flex;flex-wrap:wrap;gap:.65rem;justify-content:center;}
+.btn-primary{display:inline-flex;align-items:center;gap:.6rem;background:var(--teal);color:var(--navy-d);font-weight:800;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;padding:.9rem 1.8rem;border-radius:6px;border:none;cursor:pointer;transition:all var(--tr);text-decoration:none;font-family:'Nunito Sans',sans-serif;}
+.btn-primary:hover{background:#00C9F5;transform:translateY(-2px);box-shadow:0 10px 35px var(--teal-glow);}
+.btn-ghost{display:inline-flex;align-items:center;gap:.6rem;background:transparent;color:white;font-weight:700;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;padding:.9rem 1.8rem;border-radius:6px;border:1.5px solid rgba(255,255,255,.25);cursor:pointer;transition:all var(--tr);font-family:'Nunito Sans',sans-serif;}
+.btn-ghost:hover{border-color:var(--teal);color:var(--teal);}
+
+.hero-right{display:flex;flex-direction:column;gap:1.25rem;}
+.cert-panel{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:1.75rem;backdrop-filter:blur(14px);}
+.cert-panel-lbl{color:rgba(255,255,255,.4);font-size:.65rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;margin-bottom:1rem;}
+.cert-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.65rem;}
+.cert-mini{display:flex;flex-direction:column;align-items:center;gap:.35rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:.85rem .4rem;transition:all var(--tr);cursor:default;}
+.cert-mini:hover{background:rgba(0,180,216,.12);border-color:rgba(0,180,216,.35);transform:translateY(-2px);}
+.cert-mini-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;}
+.cert-mini-name{color:white;font-size:.66rem;font-weight:800;letter-spacing:.03em;text-align:center;}
+.cert-mini-sub{color:rgba(255,255,255,.35);font-size:.55rem;text-transform:uppercase;letter-spacing:.08em;text-align:center;}
+.feat-mini{background:rgba(255,255,255,.05);border:1px solid rgba(0,180,216,.2);border-radius:14px;padding:1.1rem;display:flex;align-items:center;gap:.9rem;backdrop-filter:blur(12px);cursor:pointer;transition:all var(--tr);}
+.feat-mini:hover{background:rgba(0,180,216,.1);transform:translateX(5px);}
+.feat-emoji{width:54px;height:54px;border-radius:10px;background:linear-gradient(135deg,var(--teal),#0077B6);display:flex;align-items:center;justify-content:center;color:white;font-size:1.4rem;flex-shrink:0;}
+.feat-mini img{width:54px;height:54px;border-radius:10px;object-fit:contain;background:rgba(255,255,255,.08);flex-shrink:0;}
+.feat-name{color:white;font-size:.87rem;font-weight:700;}
+.feat-form{color:var(--teal-l);font-size:.7rem;font-weight:400;margin-top:.15rem;}
+.feat-cat{display:inline-block;background:rgba(0,180,216,.2);color:var(--teal-l);font-size:.6rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:.2rem .55rem;border-radius:100px;margin-top:.25rem;}
+
+/* ═══ STATS ═══ */
+.stats-bar{background:var(--navy);padding:2.25rem 5%;}
+.stats-inner{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);}
+.stat-item{text-align:center;padding:.75rem 1rem;border-right:1px solid rgba(255,255,255,.08);}
+.stat-item:last-child{border-right:none;}
+.stat-num{font-family:'Playfair Display',serif;font-size:2.5rem;color:var(--teal);line-height:1;font-weight:700;}
+.stat-lbl{font-size:.72rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.12em;margin-top:.3rem;font-weight:600;}
+
+/* ═══ SECTION ═══ */
+.max-w{max-width:1400px;margin:0 auto;padding:0 5%;}
+.section{padding:5.5rem 0;}
+.s-tag{font-family:'JetBrains Mono',monospace;font-size:.67rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);font-weight:600;display:block;margin-bottom:.6rem;}
+.s-h{font-family:'Playfair Display',serif;font-size:clamp(1.9rem,3vw,2.8rem);line-height:1.15;color:var(--navy);margin-bottom:.5rem;}
+.s-h-w{font-family:'Playfair Display',serif;font-size:clamp(1.9rem,3vw,2.8rem);line-height:1.15;color:white;margin-bottom:.5rem;}
+.divider{width:52px;height:3px;background:linear-gradient(90deg,var(--teal),transparent);border-radius:2px;margin-top:.6rem;}
+
+/* ═══ ABOUT ═══ */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;}
+.about-visual{background:linear-gradient(135deg,var(--navy),var(--navy-l));border-radius:20px;padding:2.5rem;box-shadow:0 20px 60px rgba(0,34,74,.2);display:flex;flex-direction:column;gap:1rem;}
+.about-card{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:1.1rem 1.35rem;display:flex;align-items:center;gap:.9rem;}
+.about-card-icon{width:38px;height:38px;background:rgba(0,180,216,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--teal);font-size:1rem;flex-shrink:0;}
+.about-card-val{font-family:'Playfair Display',serif;font-size:1.5rem;color:white;line-height:1;}
+.about-card-lbl{font-size:.68rem;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.08em;margin-top:.1rem;}
+.values-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-top:1.75rem;}
+.val-card{background:var(--off);border:1px solid var(--border);border-radius:14px;padding:1.35rem;transition:all var(--tr);}
+.val-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--teal);}
+.val-icon{font-size:1.2rem;margin-bottom:.6rem;}
+.val-title{font-weight:800;font-size:.88rem;color:var(--navy);margin-bottom:.25rem;}
+.val-desc{font-size:.79rem;color:var(--mid);line-height:1.6;}
+
+/* ═══ SHOWCASE (auto-scroll) ═══ */
+.showcase{background:linear-gradient(135deg,var(--navy-d),var(--navy));padding:4.5rem 0;overflow:hidden;}
+.showcase-track-wrap{overflow:hidden;position:relative;margin-top:2rem;}
+.showcase-track-wrap::before,.showcase-track-wrap::after{content:'';position:absolute;top:0;bottom:0;width:120px;z-index:1;pointer-events:none;}
+.showcase-track-wrap::before{left:0;background:linear-gradient(90deg,var(--navy-d),transparent);}
+.showcase-track-wrap::after{right:0;background:linear-gradient(-90deg,var(--navy-d),transparent);}
+.showcase-track{display:flex;gap:1.25rem;animation:autoscroll 45s linear infinite;width:max-content;}
+.showcase-track:hover{animation-play-state:paused;}
+@keyframes autoscroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.sc-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;overflow:hidden;width:210px;flex-shrink:0;transition:all var(--tr);cursor:pointer;}
+.sc-card:hover{background:rgba(0,180,216,.12);border-color:rgba(0,180,216,.35);transform:translateY(-4px);}
+.sc-img{width:100%;height:130px;object-fit:contain;padding:.65rem;background:rgba(255,255,255,.04);}
+.sc-img-ph{width:100%;height:130px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.04);color:var(--teal);font-size:2.25rem;}
+.sc-body{padding:.8rem;}
+.sc-name{color:white;font-family:'Playfair Display',serif;font-size:.9rem;font-weight:600;margin-bottom:.2rem;}
+.sc-form{color:var(--teal-l);font-size:.68rem;}
+
+/* ═══ PRODUCTS ═══ */
+.products-section{background:var(--off);padding:5.5rem 0;}
+.filter-wrap{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin-bottom:1.5rem;}
+.filter-btn{padding:.42rem 1.1rem;border-radius:100px;font-size:.75rem;font-weight:700;letter-spacing:.04em;cursor:pointer;transition:all var(--tr);border:1.5px solid var(--navy);background:transparent;color:var(--navy);white-space:nowrap;font-family:'Nunito Sans',sans-serif;}
+.filter-btn.active,.filter-btn:hover{background:var(--navy);color:white;}
+.search-inp{flex:1;min-width:170px;max-width:280px;padding:.5rem 1rem;border-radius:100px;border:1.5px solid var(--border);font-family:'Nunito Sans',sans-serif;font-size:.83rem;outline:none;background:white;color:var(--text);}
+.search-inp:focus{border-color:var(--teal);}
+.prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem;}
+
+/* Product Card */
+.prod-card{background:white;border-radius:16px;overflow:hidden;border:1px solid var(--border);display:flex;flex-direction:column;transition:all var(--tr);box-shadow:0 2px 12px rgba(0,34,74,.05);}
+.prod-card:hover{transform:translateY(-6px);box-shadow:0 20px 50px rgba(0,34,74,.12);border-color:rgba(0,180,216,.3);}
+
+/* Stock badge */
+.stock-badge{position:absolute;top:10px;right:10px;font-size:.62rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:.22rem .6rem;border-radius:100px;z-index:2;}
+.stock-available{background:#D1FAE5;color:#065F46;}
+.stock-out{background:#FEE2E2;color:#991B1B;}
+.stock-coming{background:#FEF3C7;color:#92400E;}
+
+/* Carousel */
+.prod-carousel{position:relative;height:220px;overflow:hidden;background:#f0f4f8;}
+.carousel-track{display:flex;height:100%;transition:transform .55s ease;}
+.carousel-slide{min-width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
+.carousel-slide img{width:100%;height:100%;object-fit:contain;padding:.5rem;}
+.carousel-slide-info{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,var(--navy),var(--navy-l));padding:1.5rem;text-align:center;}
+.ci-title{color:white;font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:.45rem;}
+.ci-form{color:rgba(255,255,255,.55);font-size:.75rem;margin-bottom:.75rem;}
+.ci-tags{display:flex;flex-wrap:wrap;gap:.35rem;justify-content:center;}
+.ci-tag{background:rgba(0,180,216,.2);border:1px solid rgba(0,180,216,.4);color:var(--teal-l);font-size:.62rem;font-weight:700;padding:.18rem .5rem;border-radius:100px;}
+.carousel-dots{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:2;}
+.carousel-dot{width:6px;height:6px;background:rgba(255,255,255,.45);border-radius:50%;transition:all var(--tr);cursor:pointer;}
+.carousel-dot.active{background:white;width:16px;border-radius:3px;}
+
+.prod-body{padding:1.15rem;flex:1;display:flex;flex-direction:column;}
+.cat-pill{display:inline-block;font-size:.64rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;padding:.2rem .65rem;border-radius:100px;margin-bottom:.65rem;}
+.cat-gi{background:#D1FAE5;color:#065F46;}
+.cat-pain{background:#FEE2E2;color:#991B1B;}
+.cat-liver{background:#FEF3C7;color:#92400E;}
+.cat-allergy{background:#EDE9FE;color:#5B21B6;}
+.cat-nutrition{background:#DBEAFE;color:#1E40AF;}
+.cat-pediatric{background:#FCE7F3;color:#9D174D;}
+.cat-antibiotic{background:#F0FDF4;color:#166534;}
+.prod-name{font-family:'Playfair Display',serif;font-size:1.12rem;color:var(--navy);font-weight:700;margin-bottom:.22rem;}
+.prod-form{font-size:.75rem;color:var(--muted);margin-bottom:.65rem;}
+.prod-comp{font-size:.78rem;color:var(--mid);line-height:1.55;background:var(--off);border-radius:8px;padding:.6rem .75rem;margin-bottom:.75rem;border-left:3px solid var(--teal);}
+.ind-title{font-size:.64rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-bottom:.35rem;}
+.ind-tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.85rem;}
+.ind-tag{font-size:.65rem;font-weight:600;padding:.16rem .48rem;border-radius:4px;background:var(--light);color:var(--navy);border:1px solid var(--border);}
+.prod-more{font-size:.65rem;font-weight:700;color:var(--teal);cursor:pointer;padding:.16rem .48rem;border-radius:4px;border:1px solid rgba(0,180,216,.3);background:rgba(0,180,216,.06);}
+.prod-enquire{margin-top:auto;width:100%;padding:.62rem;background:var(--navy);color:white;border:none;border-radius:8px;font-size:.77rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;transition:all var(--tr);font-family:'Nunito Sans',sans-serif;}
+.prod-enquire:hover{background:var(--teal);color:var(--navy-d);}
+
+/* ═══ CERTS ═══ */
+.certs-section{background:white;padding:5rem 0;}
+.certs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.25rem;margin-top:2.75rem;}
+.cert-card{background:white;border:1px solid var(--border);border-radius:16px;padding:1.75rem 1rem;text-align:center;transition:all var(--tr);box-shadow:0 2px 12px rgba(0,34,74,.04);}
+.cert-card:hover{transform:translateY(-5px);box-shadow:0 16px 40px rgba(0,34,74,.1);border-color:var(--teal);}
+.cert-logo-wrap{width:80px;height:80px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;overflow:hidden;border:1px solid rgba(0,34,74,.06);}
+.cert-logo-wrap img{width:80px;height:80px;object-fit:cover;display:block;}
+.cert-logo-wrap .cert-icon-emoji{font-size:2.1rem;line-height:1;}
+.cert-card-name{font-weight:800;font-size:.98rem;margin-bottom:.25rem;}
+.cert-card-desc{font-size:.77rem;color:var(--mid);line-height:1.5;}
+
+/* ═══ DISTRIBUTOR ═══ */
+.dist-section{background:linear-gradient(135deg,var(--navy) 0%,#003878 100%);padding:5.5rem 0;position:relative;overflow:hidden;}
+.dist-section::before{content:'';position:absolute;top:-80px;right:-80px;width:500px;height:500px;background:rgba(0,180,216,.06);border-radius:50%;}
+.dist-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;}
+.dist-benefits{display:flex;flex-direction:column;gap:.9rem;margin-top:1.75rem;}
+.dist-benefit{display:flex;align-items:flex-start;gap:.85rem;}
+.dist-b-icon{width:38px;height:38px;background:rgba(0,180,216,.15);border:1px solid rgba(0,180,216,.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0;}
+.dist-b-title{color:white;font-weight:800;font-size:.88rem;margin-bottom:.15rem;}
+.dist-b-desc{color:rgba(255,255,255,.5);font-size:.79rem;line-height:1.5;}
+
+/* Form */
+.enq-form-wrap{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:2.25rem;backdrop-filter:blur(14px);}
+.form-title{color:white;font-family:'Playfair Display',serif;font-size:1.45rem;margin-bottom:1.75rem;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;}
+.fg{margin-bottom:.9rem;}
+.flbl{display:block;color:rgba(255,255,255,.55);font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:.4rem;}
+.finp{width:100%;padding:.68rem .95rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:white;font-family:'Nunito Sans',sans-serif;font-size:.87rem;outline:none;transition:border-color var(--tr);}
+.finp:focus{border-color:var(--teal);}
+.finp::placeholder{color:rgba(255,255,255,.28);}
+.fsel{width:100%;padding:.68rem .95rem;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:8px;color:white;font-family:'Nunito Sans',sans-serif;font-size:.87rem;outline:none;appearance:none;cursor:pointer;}
+.fsel option{background:var(--navy);color:white;}
+.fsuccess{display:none;text-align:center;padding:2rem;}
+.fsuccess-icon{font-size:2.8rem;margin-bottom:.75rem;}
+.fsuccess-title{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--teal);margin-bottom:.4rem;}
+.fsuccess-msg{color:rgba(255,255,255,.6);font-size:.87rem;}
+
+/* ═══ CONTACT ═══ */
+.contact-section{background:var(--off);padding:5.5rem 0;}
+.contact-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:4rem;align-items:start;}
+.contact-items{display:flex;flex-direction:column;gap:1.1rem;margin-top:1.75rem;}
+.contact-item{display:flex;align-items:flex-start;gap:.85rem;}
+.contact-icon{width:42px;height:42px;background:linear-gradient(135deg,var(--navy),var(--navy-l));border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--teal);font-size:.95rem;flex-shrink:0;}
+.contact-lbl{font-size:.68rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-bottom:.18rem;}
+.contact-val{font-size:.9rem;color:var(--text);line-height:1.6;font-weight:600;}
+.contact-form-wrap{background:white;border-radius:20px;padding:2.25rem;border:1px solid var(--border);box-shadow:var(--shadow);}
+.contact-finp{width:100%;padding:.68rem .95rem;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:.87rem;color:var(--text);outline:none;transition:border-color var(--tr);background:white;}
+.contact-finp:focus{border-color:var(--teal);}
+.contact-flbl{display:block;font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--mid);margin-bottom:.38rem;}
+
+/* ═══ FOOTER ═══ */
+footer{background:var(--navy-d);padding:4rem 0 0;color:rgba(255,255,255,.5);}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem;margin-bottom:3rem;}
+.footer-brand{font-family:'Playfair Display',serif;font-size:1.05rem;color:white;line-height:1.2;margin:.75rem 0 .5rem;}
+.footer-desc{font-size:.8rem;line-height:1.8;max-width:260px;margin-bottom:1.2rem;}
+.footer-tags{display:flex;flex-wrap:wrap;gap:.45rem;}
+.footer-tag{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:4px;padding:.25rem .6rem;font-size:.6rem;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.07em;}
+.footer-h{font-size:.7rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:1rem;}
+.footer-lnk{display:block;font-size:.82rem;color:rgba(255,255,255,.5);cursor:pointer;padding:.28rem 0;transition:color var(--tr);background:none;border:none;text-align:left;width:100%;font-family:'Nunito Sans',sans-serif;}
+.footer-lnk:hover{color:var(--teal);}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.06);padding:1.5rem 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.75rem;}
+.footer-copy{font-size:.77rem;}
+.footer-credit{font-size:.7rem;font-family:'JetBrains Mono',monospace;color:var(--teal);opacity:.8;}
+
+/* ═══ MODAL ═══ */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:950;align-items:center;justify-content:center;padding:1.5rem;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:white;border-radius:20px;max-width:700px;width:100%;max-height:90vh;overflow-y:auto;position:relative;}
+.modal-hdr{background:linear-gradient(135deg,var(--navy),var(--navy-l));padding:1.75rem;border-radius:20px 20px 0 0;display:flex;justify-content:space-between;align-items:flex-start;}
+.modal-close{background:none;border:none;color:white;font-size:1.45rem;cursor:pointer;line-height:1;}
+.modal-body{padding:1.75rem;}
+.modal-carousel{position:relative;border-radius:12px;overflow:hidden;background:#f0f4f8;height:260px;margin-bottom:1.5rem;}
+.modal-slides{display:flex;height:100%;transition:transform .5s ease;}
+.modal-slide{min-width:100%;height:100%;}
+.modal-slide img{width:100%;height:100%;object-fit:contain;padding:.5rem;}
+.modal-nav{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,.4);border:none;color:white;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all var(--tr);}
+.modal-nav:hover{background:var(--teal);color:var(--navy);}
+.modal-prev{left:10px;}
+.modal-next{right:10px;}
+.modal-dots{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:5px;}
+.modal-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5);cursor:pointer;transition:all var(--tr);}
+.modal-dot.active{background:white;width:16px;border-radius:3px;}
+
+/* ═══ WHATSAPP FAB ═══ */
+.wa-fab{position:fixed;bottom:1.75rem;right:1.75rem;z-index:800;width:56px;height:56px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 24px rgba(37,211,102,.45);transition:all var(--tr);cursor:pointer;border:none;text-decoration:none;}
+.wa-fab:hover{transform:scale(1.1);box-shadow:0 10px 32px rgba(37,211,102,.55);}
+.wa-fab svg{width:28px;height:28px;fill:white;}
+.wa-tooltip{position:absolute;right:68px;background:var(--navy-d);color:white;font-size:.75rem;font-weight:700;white-space:nowrap;padding:.45rem .85rem;border-radius:8px;opacity:0;transform:translateX(8px);transition:all var(--tr);pointer-events:none;}
+.wa-fab:hover .wa-tooltip{opacity:1;transform:translateX(0);}
+
+/* ═══ TOAST ═══ */
+#toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(20px);z-index:9999;background:var(--navy);color:white;border-radius:10px;padding:.9rem 1.75rem;font-size:.85rem;font-weight:600;opacity:0;transition:all .4s;pointer-events:none;box-shadow:0 8px 30px rgba(0,0,0,.3);white-space:nowrap;}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ═══ ANIMATIONS ═══ */
+.fade-up{opacity:0;transform:translateY(32px);transition:opacity .65s ease,transform .65s ease;}
+.fade-up.vis{opacity:1;transform:translateY(0);}
+.fade-up-2{opacity:0;transform:translateY(32px);transition:opacity .65s .15s ease,transform .65s .15s ease;}
+.fade-up-2.vis{opacity:1;transform:translateY(0);}
+.fade-up-3{opacity:0;transform:translateY(32px);transition:opacity .65s .3s ease,transform .65s .3s ease;}
+.fade-up-3.vis{opacity:1;transform:translateY(0);}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:1024px){
+  .hero-inner{grid-template-columns:1fr;gap:2.5rem;text-align:center;}
+  .hero-p{margin:0 auto 2rem;}
+  .hero-btns{justify-content:center;}
+  .about-grid,.dist-grid,.contact-grid{grid-template-columns:1fr;gap:2.5rem;}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:2rem;}
+}
+@media(max-width:768px){
+  .nav-links,.nav-cta{display:none;}
+  .hamburger{display:flex;}
+  .stats-inner{grid-template-columns:repeat(2,1fr);}
+  .stat-item{border-bottom:1px solid rgba(255,255,255,.08);}
+  .cert-grid{grid-template-columns:repeat(2,1fr);}
+  .footer-grid{grid-template-columns:1fr;}
+  .form-row{grid-template-columns:1fr;}
+  .wa-fab{bottom:1.25rem;right:1.25rem;}
+  
+  /* Hero Mobile Layout Fixes */
+  .hero-inner { padding: 2rem 5%; }
+  .hero-btns { flex-direction: column; width: 100%; gap: 0.8rem; }
+  .btn-primary, .btn-ghost { width: 100%; justify-content: center; }
+  .cert-panel { padding: 1.25rem 1rem; }
+}
+@media(max-width:480px){
+  .certs-grid{grid-template-columns:repeat(2,1fr);}
+  .prod-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<a class="wa-fab" id="wa-btn" href="#" target="_blank" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  <div class="wa-tooltip">Chat on WhatsApp</div>
+</a>
+
+<div class="mob-overlay" id="mobOverlay" onclick="closeDrawer()"></div>
+<div class="mob-drawer" id="mobDrawer">
+  <button class="drawer-x" onclick="closeDrawer()">✕</button>
+  <button class="drawer-btn" onclick="goto('home');closeDrawer()">Home</button>
+  <button class="drawer-btn" onclick="goto('about');closeDrawer()">About</button>
+  <button class="drawer-btn" onclick="goto('products');closeDrawer()">Products</button>
+  <button class="drawer-btn" onclick="goto('certificates');closeDrawer()">Certifications</button>
+  <button class="drawer-btn" onclick="goto('distributor');closeDrawer()">Distributors</button>
+  <button class="drawer-btn" onclick="goto('contact');closeDrawer()">Contact</button>
+</div>
+
+<nav id="navbar">
+  <div class="nav-inner">
+    <button class="nav-logo" onclick="goto('home')">
+      <img src="images/logo.png" class="logo-img">
+      <div><div class="logo-name" id="nav-name">Nirmedix Pharma</div><div class="logo-sub">Pvt. Ltd.</div></div>
+    </button>
+    <div class="nav-links">
+      <button class="nav-btn active" data-s="home"    onclick="goto('home')">Home</button>
+      <button class="nav-btn"        data-s="about"   onclick="goto('about')">About</button>
+      <button class="nav-btn"        data-s="products" onclick="goto('products')">Products</button>
+      <button class="nav-btn"        data-s="certificates" onclick="goto('certificates')">Certifications</button>
+      <button class="nav-btn"        data-s="distributor"  onclick="goto('distributor')">Distributors</button>
+      <button class="nav-btn"        data-s="contact"  onclick="goto('contact')">Contact</button>
+    </div>
+    <button class="nav-cta" onclick="goto('distributor')">Become a Distributor</button>
+    <button class="hamburger" onclick="openDrawer()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<section class="hero" id="home">
+  <div class="hero-grid"></div>
+  <div class="hero-orb orb-a"></div>
+  <div class="hero-orb orb-b"></div>
+  <div class="hero-orb orb-c"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge"><span class="pulse"></span><span id="hero-badge">Trusted Pharmaceutical Partner</span></div>
+      <h1 class="hero-h" id="hero-title">Delivering <span class="accent">Premium</span> Healthcare Across India</h1>
+      <p class="hero-p" id="hero-desc">Loading...</p>
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="goto('products')">Explore Products →</button>
+        <button class="btn-ghost"   onclick="goto('distributor')">Partner With Us</button>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="cert-panel">
+        <div class="cert-panel-lbl">Quality Certifications</div>
+        <div class="cert-grid" id="hero-certs">
+          <div class="skel skel-block" style="height:90px;"></div>
+          <div class="skel skel-block" style="height:90px;"></div>
+          <div class="skel skel-block" style="height:90px;"></div>
+          <div class="skel skel-block" style="height:90px;"></div>
+        </div>
+      </div>
+      <div class="hero-slider" id="hero-slider">
+        <div class="hero-slider-track" id="hero-featured"></div>
+        <div class="hero-slider-dots" id="hero-dots"></div>
+      </div>
+    </div></div></section>
+
+<div class="stats-bar">
+  <div class="stats-inner max-w" id="stats-bar">
+    <div class="stat-item"><div class="stat-num skel" style="width:60%;margin:0 auto .4rem;height:2.5rem;"></div><div class="skel" style="width:70%;margin:0 auto;height:.9rem;"></div></div>
+    <div class="stat-item"><div class="stat-num skel" style="width:60%;margin:0 auto .4rem;height:2.5rem;"></div><div class="skel" style="width:70%;margin:0 auto;height:.9rem;"></div></div>
+    <div class="stat-item"><div class="stat-num skel" style="width:60%;margin:0 auto .4rem;height:2.5rem;"></div><div class="skel" style="width:70%;margin:0 auto;height:.9rem;"></div></div>
+    <div class="stat-item"><div class="stat-num skel" style="width:60%;margin:0 auto .4rem;height:2.5rem;"></div><div class="skel" style="width:70%;margin:0 auto;height:.9rem;"></div></div>
+  </div>
+</div>
+
+<section class="section" id="about">
+  <div class="max-w">
+    <div class="about-grid">
+      <div class="fade-up">
+        <div class="about-visual" id="about-visual">
+          <div class="skel" style="height:80px;border-radius:12px;"></div>
+          <div class="skel" style="height:80px;border-radius:12px;"></div>
+          <div class="skel" style="height:80px;border-radius:12px;"></div>
+        </div>
+      </div>
+      <div class="fade-up-2">
+        <span class="s-tag">About Nirmedix</span>
+        <h2 class="s-h" id="about-title">Your Trusted Pharma<br>Marketing Partner</h2>
+        <div class="divider"></div>
+        <p style="color:var(--mid);line-height:1.82;margin:1.25rem 0;font-size:.95rem;" id="about-desc"></p>
+        <div class="values-grid" id="values-grid"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="showcase" id="showcase">
+  <div class="max-w">
+    <span class="s-tag">Full Product Range</span>
+    <h2 class="s-h-w">Our <em style="color:var(--teal);">Complete</em> Portfolio</h2>
+  </div>
+  <div class="showcase-track-wrap">
+    <div class="showcase-track" id="showcase-track">
+      <div class="skel sc-card" style="height:190px;flex-shrink:0;"></div>
+      <div class="skel sc-card" style="height:190px;flex-shrink:0;"></div>
+      <div class="skel sc-card" style="height:190px;flex-shrink:0;"></div>
+    </div>
+  </div>
+</div>
+
+<section class="products-section" id="products">
+  <div class="max-w">
+    <div style="text-align:center;margin-bottom:3rem;" class="fade-up">
+      <span class="s-tag">Product Catalogue</span>
+      <h2 class="s-h" id="products-title">Comprehensive Range of<br><em style="color:var(--teal);font-style:italic;">Quality Formulations</em></h2>
+      <div class="divider" style="margin:.6rem auto 0;"></div>
+    </div>
+    <div class="filter-wrap fade-up-2">
+      <div id="filter-row" style="display:flex;gap:.6rem;flex-wrap:wrap;"></div>
+      <input type="text" class="search-inp" id="prod-search" placeholder="🔍 Search products..." oninput="filterProducts()">
+    </div>
+    <div style="margin-bottom:1rem;font-size:.79rem;color:var(--muted);font-weight:600;" id="result-count"></div>
+    <div class="prod-grid" id="prod-grid">
+      <div class="skel skel-block" style="height:480px;"></div>
+      <div class="skel skel-block" style="height:480px;"></div>
+      <div class="skel skel-block" style="height:480px;"></div>
+    </div>
+  </div>
+</section>
+
+<section class="certs-section" id="certificates">
+  <div class="max-w">
+    <div style="text-align:center;" class="fade-up">
+      <span class="s-tag">Compliance & Standards</span>
+      <h2 class="s-h">Manufacturers <em style="color:var(--teal);">Certifications</em> &amp; Accreditations</h2>
+      <div class="divider" style="margin:.6rem auto 0;"></div>
+      <p style="color:var(--mid);font-size:.91rem;margin-top:1rem;max-width:580px;margin-left:auto;margin-right:auto;" id="certs-desc"></p>
+    </div>
+    <div class="certs-grid" id="certs-grid">
+      <div class="skel" style="height:180px;border-radius:16px;"></div>
+      <div class="skel" style="height:180px;border-radius:16px;"></div>
+      <div class="skel" style="height:180px;border-radius:16px;"></div>
+      <div class="skel" style="height:180px;border-radius:16px;"></div>
+    </div>
+  </div>
+</section>
+
+<section class="dist-section" id="distributor">
+  <div class="max-w">
+    <div class="dist-grid">
+      <div>
+        <span class="s-tag" style="color:var(--teal-l);">Distributor Program</span>
+        <h2 class="s-h-w" id="dist-title">Partner With Us &amp;<br>Grow Your Business</h2>
+        <div class="divider"></div>
+        <p style="color:rgba(255,255,255,.55);font-size:.92rem;line-height:1.78;margin-top:1.25rem;" id="dist-desc"></p>
+        <div class="dist-benefits" id="dist-benefits"></div>
+      </div>
+      <div>
+        <div class="enq-form-wrap">
+          <div class="form-title">Submit Enquiry</div>
+          <form id="enqForm" onsubmit="handleEnquiry(event)">
+            <div class="form-row">
+              <div class="fg"><label class="flbl">Full Name *</label><input class="finp" name="name" placeholder="Your name" required></div>
+              <div class="fg"><label class="flbl">Phone *</label><input class="finp" name="phone" placeholder="+91 XXXXX XXXXX" required></div>
+            </div>
+            <div class="form-row">
+              <div class="fg"><label class="flbl">Email</label><input class="finp" name="email" type="email" placeholder="your@email.com"></div>
+              <div class="fg">
+                <label class="flbl">State</label>
+                <select class="fsel" name="state">
+                  <option value="">Select State</option>
+                  <option>Assam</option><option>West Bengal</option><option>Bihar</option><option>Meghalaya</option>
+                  <option>Tripura</option><option>Mizoram</option><option>Nagaland</option><option>Manipur</option>
+                  <option>Arunachal Pradesh</option><option>Sikkim</option><option>Odisha</option><option>Jharkhand</option>
+                  <option>Chhattisgarh</option><option>Madhya Pradesh</option><option>Uttar Pradesh</option><option>Delhi</option>
+                  <option>Maharashtra</option><option>Gujarat</option><option>Rajasthan</option><option>Punjab</option>
+                  <option>Haryana</option><option>Karnataka</option><option>Tamil Nadu</option><option>Kerala</option><option>Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="fg">
+              <label class="flbl">Business Type</label>
+              <select class="fsel" name="business_type">
+                <option value="">Select type</option>
+                <option>Distributor</option><option>Retailer / Chemist</option>
+                <option>Hospital / Clinic</option><option>MR / Field Rep</option><option>Other</option>
+              </select>
+            </div>
+            <div class="fg"><label class="flbl">Message</label><textarea class="finp" name="message" rows="3" placeholder="Tell us about your business..." style="resize:vertical;"></textarea></div>
+            <button type="submit" class="btn-primary" style="width:100%;justify-content:center;margin-top:.25rem;" id="enq-btn">
+              <span id="enq-btn-txt">Submit Enquiry →</span>
+            </button>
+          </form>
+          <div class="fsuccess" id="enq-success">
+            <div class="fsuccess-icon">✅</div>
+            <div class="fsuccess-title">Thank You!</div>
+            <div class="fsuccess-msg">We've received your enquiry. Our team will contact you within 24 hours.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact-section" id="contact">
+  <div class="max-w">
+    <div class="contact-grid">
+      <div class="fade-up">
+        <span class="s-tag">Get In Touch</span>
+        <h2 class="s-h">We'd Love to<br><em style="color:var(--teal);">Hear From You</em></h2>
+        <div class="divider"></div>
+        <div class="contact-items" id="contact-items"></div>
+      </div>
+      <div class="contact-form-wrap fade-up-2">
+        <h3 style="font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--navy);margin-bottom:1.5rem;">Send a Message</h3>
+        <form id="contactForm" onsubmit="handleContact(event)">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-bottom:.9rem;">
+            <div><label class="contact-flbl">Name *</label><input class="contact-finp" name="name" placeholder="Your name" required></div>
+            <div><label class="contact-flbl">Email *</label><input class="contact-finp" name="email" type="email" placeholder="your@email.com" required></div>
+          </div>
+          <div style="margin-bottom:.9rem;"><label class="contact-flbl">Subject</label><input class="contact-finp" name="subject" placeholder="What's this about?"></div>
+          <div style="margin-bottom:1.25rem;"><label class="contact-flbl">Message *</label><textarea class="contact-finp" name="message" rows="5" placeholder="How can we help you?" required style="resize:vertical;"></textarea></div>
+          <button type="submit" class="btn-primary" style="width:100%;justify-content:center;background:var(--navy);" id="contact-btn">
+            <span id="contact-btn-txt">Send Message →</span>
+          </button>
+        </form>
+        <div class="fsuccess" id="contact-success" style="background:transparent;">
+          <div class="fsuccess-icon">✉️</div>
+          <div class="fsuccess-title" style="color:var(--navy);">Message Sent!</div>
+          <div class="fsuccess-msg" style="color:var(--mid);">Thank you! We'll get back to you shortly.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="max-w">
+    <div class="footer-grid">
+      <div>
+        <div style="display:flex;align-items:center;gap:.7rem;">
+          <img src="logo.png" class="logo-img">
+        </div>
+        <div class="footer-brand" id="footer-name">Nirmedix Pharma Pvt. Ltd.</div>
+        <p class="footer-desc" id="footer-desc"></p>
+        <div class="footer-tags" id="footer-tags"></div>
+      </div>
+      <div>
+        <div class="footer-h">Pages</div>
+        <button class="footer-lnk" onclick="goto('home')">Home</button>
+        <button class="footer-lnk" onclick="goto('about')">About Us</button>
+        <button class="footer-lnk" onclick="goto('products')">Products</button>
+        <button class="footer-lnk" onclick="goto('distributor')">Distributors</button>
+        <button class="footer-lnk" onclick="goto('contact')">Contact</button>
+      </div>
+      <div>
+        <div class="footer-h">Categories</div>
+        <button class="footer-lnk" onclick="filterByCat('gi')">GI / Anti-Ulcerants</button>
+        <button class="footer-lnk" onclick="filterByCat('pain')">Analgesics / Pain</button>
+        <button class="footer-lnk" onclick="filterByCat('liver')">Liver Care</button>
+        <button class="footer-lnk" onclick="filterByCat('allergy')">Allergy / Respiratory</button>
+        <button class="footer-lnk" onclick="filterByCat('nutrition')">Nutritional</button>
+        <button class="footer-lnk" onclick="filterByCat('pediatric')">Paediatric</button>
+      </div>
+      <div>
+        <div class="footer-h">Contact</div>
+        <div style="font-size:.82rem;line-height:1.85;" id="footer-contact"></div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy" id="footer-copy">© 2025 Nirmedix Pharma Pvt. Ltd. All rights reserved.</div>
+      <div style="font-size:.7rem;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,.2);">WHO-GMP · ISO 9001 · FSSAI · GMP</div>
+    </div>
+    <div style="border-top:1px solid rgba(255,255,255,.05);padding:1rem 0;text-align:center;">
+      <span style="font-size:.72rem;color:rgba(255,255,255,.22);">Website designed & developed by </span>
+      <span style="font-size:.72rem;color:var(--teal);font-weight:700;">Nordix Technologies Private Limited</span>
+    </div>
+  </div>
+</footer>
+
+<div class="modal-overlay" id="prodModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <div>
+        <div style="font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal-l);margin-bottom:.3rem;" id="m-cat"></div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.55rem;color:white;" id="m-name"></div>
+        <div style="color:rgba(255,255,255,.5);font-size:.8rem;margin-top:.25rem;" id="m-form"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-carousel">
+        <div class="modal-slides" id="m-slides"></div>
+        <button class="modal-nav modal-prev" onclick="modalNav(-1)">‹</button>
+        <button class="modal-nav modal-next" onclick="modalNav(1)">›</button>
+        <div class="modal-dots" id="m-dots"></div>
+      </div>
+      <div style="margin-bottom:1.25rem;">
+        <div style="font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-bottom:.5rem;">Active Composition</div>
+        <div style="background:var(--off);border-left:3px solid var(--teal);border-radius:8px;padding:.85rem;font-size:.87rem;color:var(--text);line-height:1.6;" id="m-comp"></div>
+      </div>
+      <div style="margin-bottom:1.5rem;" id="m-desc-wrap">
+        <div style="font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-bottom:.6rem;">Mechanism of Action</div>
+        <div id="m-desc" style="font-size:.87rem;color:var(--mid);line-height:1.72;"></div>
+      </div>
+      <div>
+        <div style="font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mid);margin-bottom:.6rem;">Therapeutic Indications</div>
+        <div id="m-inds" style="display:flex;flex-wrap:wrap;gap:.45rem;"></div>
+      </div>
+      <button class="btn-primary" style="margin-top:1.75rem;width:100%;justify-content:center;background:var(--navy);" onclick="closeModal();goto('distributor')">Enquire About This Product →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  ⚙️  CONFIGURATION — Update with your Supabase details
+// ═══════════════════════════════════════════════════════
+const SUPABASE_URL     = 'https://gkjleszaidwwefmzyhso.supabase.co';      // e.g. https://abcxyz.supabase.co
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_ptHLzLkXivGwGczkfL-H3g_1J7MtHZA';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdramxlc3phaWR3d2VmbXp5aHNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NjE4MTYsImV4cCI6MjA4ODUzNzgxNn0.AbqOTbEZbDrDHkVIef9cIzf6eph0GtHE1sn7jAfs3bY'; // Your project's anon/public key
+
+// ═══════════════════════════════════════════════════════
+//  INIT SUPABASE
+// ═══════════════════════════════════════════════════════
+const IS_CONFIGURED = !SUPABASE_URL.includes('YOUR_');
+let sb = null;
+if (IS_CONFIGURED) {
+  try { sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════
+//  CATEGORY CONFIG
+// ═══════════════════════════════════════════════════════
+const CATS = {
+  gi:        {label:'GI / Anti-Ulcerants', cls:'cat-gi',        icon:'💊'},
+  pain:      {label:'Analgesics / Pain',   cls:'cat-pain',      icon:'💪'},
+  liver:     {label:'Liver Care',          cls:'cat-liver',     icon:'🫁'},
+  allergy:   {label:'Allergy / Respiratory',cls:'cat-allergy',  icon:'🤧'},
+  nutrition: {label:'Nutritional',          cls:'cat-nutrition', icon:'🌿'},
+  pediatric: {label:'Paediatric',           cls:'cat-pediatric', icon:'👶'},
+  antibiotic:{label:'Antibiotics',          cls:'cat-antibiotic',icon:'💉'}
+};
+
+// ═══════════════════════════════════════════════════════
+//  EMBEDDED FALLBACK DATA (used if Supabase not configured)
+// ═══════════════════════════════════════════════════════
+const FALLBACK = {
+  company:{name:"Nirmedix Pharma",fullName:"Nirmedix Pharma Pvt. Ltd.",tagline:"Trusted Pharmaceutical Partner",heroTitle:"Delivering <span class='accent'>Premium</span> Healthcare Across India",heroDesc:"Nirmedix Pharma Pvt. Ltd. sources WHO-GMP certified pharmaceutical formulations and supplies a comprehensive range of quality medicines to distributors and retailers across India.",aboutTitle:"Your Trusted Pharma<br>Marketing Partner",aboutDesc:"Nirmedix Pharma Pvt. Ltd. is a growing pharmaceutical marketing company dedicated to making high-quality medicines accessible across India.",productsTitle:"Comprehensive Range of Quality Formulations",distTitle:"Partner With Us &amp;<br>Grow Your Business",distDesc:"Join our expanding network of distributors and retailers. We offer competitive margins, dedicated support, and a comprehensive product range.",address:"Namghar Road, Barpeta Road,<br>Assam — 781315",phone:"+91 XXXXX XXXXX",whatsapp:"91XXXXXXXXXX",whatsapp_msg:"Hello, I am interested in your products.",email:"info@nirmedixpharma.com",hours:"Mon–Sat: 9:00 AM – 6:00 PM",footerDesc:"Pharmaceutical marketing company sourcing WHO-GMP certified formulations and supplying to distributors & retailers across India.",copyright:"© 2025 Nirmedix Pharma Pvt. Ltd. All rights reserved."},
+  stats:[{num:"15+",label:"Products"},{num:"8+",label:"Therapeutic Areas"},{num:"100+",label:"Distributors"},{num:"WHO-GMP",label:"Certified Source"}],
+  values:[{icon:"🎯",title:"Quality Assurance",description:"Every product sourced from WHO-GMP certified manufacturers with strict QC protocols."},{icon:"🚀",title:"Pan-India Reach",description:"Extensive distribution network across multiple states ensuring timely delivery."},{icon:"🤝",title:"Partner Support",description:"Dedicated support team available to assist distributors and partners."},{icon:"💊",title:"Diverse Portfolio",description:"Wide range covering GI, pain, liver care, allergy, nutrition, and pediatric segments."}],
+  dist_benefits:[{icon:"💰",title:"Competitive Margins",description:"Best-in-industry margins to maximize your profitability."},{icon:"📦",title:"Fast & Reliable Supply",description:"Consistent stock availability with prompt order fulfillment."},{icon:"🎓",title:"Product Training",description:"Comprehensive product knowledge and marketing support."},{icon:"📋",title:"Regulatory Support",description:"Full documentation and compliance support provided."}],
+  certificates:[{name:"WHO-GMP",description:"World Health Organization Good Manufacturing Practice",icon:"🏥",color:"#0077B6",bg_color:"#EBF8FF"},{name:"ISO 9001:2015",description:"Quality Management System Certification",icon:"✅",color:"#059669",bg_color:"#ECFDF5"},{name:"FSSAI",description:"Food Safety & Standards Authority of India",icon:"🛡️",color:"#D97706",bg_color:"#FFFBEB"},{name:"GMP",description:"Good Manufacturing Practices Compliant",icon:"⚗️",color:"#7C3AED",bg_color:"#F5F3FF"},{name:"HACCP",description:"Hazard Analysis Critical Control Points",icon:"🔬",color:"#DC2626",bg_color:"#FEF2F2"},{name:"DCGI",description:"Drugs Controller General of India Approved",icon:"💊",color:"#1E40AF",bg_color:"#EFF6FF"}],
+  products:[
+    {id:"1",name:"Nirmepan™-DSR",category:"gi",form:"Capsule · 10×10",composition:"Pantoprazole 40mg + Domperidone 30mg (Prolonged-Release)",description:"Pantoprazole is an effective PPI that stops acid production in the stomach by binding with Proton Pump at the final stage. Domperidone accelerates transit in small intestine and acts as a trusted antiemetic.",image_url:"images/nirmepan-dsr.jpg",image_url_2:"",indications:["Heart Burn","Gastric/Duodenal Ulcers","Dyspepsia","Erosive Esophagitis"],is_featured:true,stock_status:"available"},
+    {id:"2",name:"Mulvitadix™-L",category:"nutrition",form:"Syrup · 200 ml",composition:"Lycopene 10% 2000mcg + Niacinamide 25mg + Folic Acid 100mcg + Selenium 35mcg + Zinc 3mg",description:"A potent antioxidant lycopene-based multivitamin syrup that supports healthy vascular function and improves insulin sensitivity.",image_url:"images/mulvitadix-l.jpg",image_url_2:"",indications:["Diabetes","High Blood Pressure","Skin Disease","Oxidative Stress"],is_featured:true,stock_status:"available"},
+    {id:"3",name:"Nircalci™-XT",category:"nutrition",form:"Tablet · 10×10",composition:"Calcium Citrate Malate 1250mg + Vitamin K₂7 90mcg + Vitamin D3 1000 IU + Methylcobalamin 1500mcg",description:"Increases calcium absorption. Essential for healthy arteries & strong bones. Manages hypocalcaemia in dialysis patients.",image_url:"images/nircalci-xt.jpg",image_url_2:"",indications:["Osteoporosis","Post Menopausal","Renal Osteo-Dystrophy"],is_featured:true,stock_status:"available"},
+    {id:"4",name:"Silynodix™ Plus",category:"liver",form:"Syrup · 200 ml",composition:"Silymarin with B-Complex Syrup (Sugar Free)",description:"Reduces hyperammonemia, improves impaired ammonia detoxification, controls cirrhosis and hepatic encephalopathy.",image_url:"images/silynodix-plus.jpg",image_url_2:"",indications:["Hepatitis","Liver Cirrhosis","Fatty Liver","Alcohol Induced Liver Damage"],is_featured:false,stock_status:"available"},
+    {id:"5",name:"Aclodix™-TH4",category:"pain",form:"Tablet · 10×10",composition:"Aceclofenac 100mg + Thiocolchicoside 4mg",description:"Aceclofenac exerts better safety profile over Diclofenac. Thiocolchicoside provides better pain reduction in patients with muscle spasm.",image_url:"images/aclodix-th4.jpg",image_url_2:"",indications:["Sprain & Strain","Spondylosis","Low Back Pain","Sports Injury"],is_featured:false,stock_status:"available"},
+    {id:"6",name:"Montinir™-L",category:"allergy",form:"Tablet · 10×10 (Adult)",composition:"Levocetirizine HCl 5mg + Montelukast Sodium 10mg",description:"Levocetirizine blocks histamine. Montelukast inhibits cysteinyl leukotriene and corrects pathophysiology of asthma.",image_url:"images/montinir-l-tab.jpg",image_url_2:"",indications:["Allergic Rhinitis","Chronic Idiopathic Urticaria","Asthma"],is_featured:false,stock_status:"available"}
+  ]
+};
+
+// ═══════════════════════════════════════════════════════
+//  GLOBAL STATE
+// ═══════════════════════════════════════════════════════
+let allProducts = [];
+let currentFilter = 'all';
+let carouselTimers = {};
+let modalSlide = 0;
+
+// ═══════════════════════════════════════════════════════
+//  LOAD ALL DATA
+// ═══════════════════════════════════════════════════════
+async function loadAll() {
+  if (!IS_CONFIGURED) { renderAll(buildFallbackData()); return; }
+  try {
+    const [settings, products, certs, stats, values, benefits] = await Promise.all([
+      sb.from('site_settings').select('key,value'),
+      sb.from('products').select('*').eq('is_active', true).order('sort_order').order('created_at'),
+      sb.from('certificates').select('*').eq('is_active', true).order('sort_order'),
+      sb.from('stats').select('*').order('sort_order'),
+      sb.from('company_values').select('*').order('sort_order'),
+      sb.from('dist_benefits').select('*').order('sort_order'),
+    ]);
+    const settingsMap = {};
+    (settings.data || []).forEach(s => settingsMap[s.key] = s.value);
+    renderAll({
+      company: settingsMap.company || FALLBACK.company,
+      seo: settingsMap.seo || {},
+      certsDesc: settingsMap.certs_desc || '',
+      products: products.data || FALLBACK.products,
+      certificates: certs.data || FALLBACK.certificates,
+      stats: stats.data || FALLBACK.stats,
+      values: values.data || FALLBACK.values,
+      dist_benefits: benefits.data || FALLBACK.dist_benefits,
+    });
+    trackEvent('page_view', {page: 'home'});
+  } catch (e) {
+    console.warn('Supabase error, using fallback:', e);
+    renderAll(buildFallbackData());
+  }
+}
+
+function buildFallbackData() {
+  return {
+    company: FALLBACK.company,
+    seo: {},
+    certsDesc: 'All our products are sourced from manufacturers holding internationally recognized certifications.',
+    products: FALLBACK.products,
+    certificates: FALLBACK.certificates,
+    stats: FALLBACK.stats,
+    values: FALLBACK.values,
+    dist_benefits: FALLBACK.dist_benefits
+  };
+}
+
+// ═══════════════════════════════════════════════════════
+//  RENDER ALL SECTIONS
+// ═══════════════════════════════════════════════════════
+function renderAll(data) {
+  const c = data.company || {};
+  applySEO(data.seo, c);
+  allProducts = data.products;
+  renderHero(c, data.certificates);
+  renderStats(data.stats);
+  renderAbout(c, data.values);
+  renderShowcase(data.products);
+  renderFilterBtns();
+  filterProducts();
+  renderCerts(data.certificates, data.certsDesc);
+  renderDistributor(c, data.dist_benefits);
+  renderContact(c);
+  renderFooter(c, data.certificates);
+  setupWhatsApp(c);
+  setupScrollAnimations();
+}
+
+function applySEO(seo, c) {
+  if (seo.title) document.title = seo.title;
+  if (seo.description) document.querySelector('meta[name="description"]').content = seo.description;
+  if (seo.keywords) {
+    let km = document.querySelector('meta[name="keywords"]');
+    if (!km) { km = document.createElement('meta'); km.name = 'keywords'; document.head.appendChild(km); }
+    km.content = seo.keywords;
+  }
+}
+
+function renderHero(c, certs = []) {
+  document.getElementById('nav-name').textContent = c.name || 'Nirmedix Pharma';
+  document.getElementById('hero-badge').textContent = c.tagline || 'Trusted Pharmaceutical Partner';
+  document.getElementById('hero-title').innerHTML = c.heroTitle || FALLBACK.company.heroTitle;
+  document.getElementById('hero-desc').textContent = c.heroDesc || '';
+
+  // ── Cert grid: show ALL certs (synced with cert section) ──
+  document.getElementById('hero-certs').innerHTML = certs.map(cert => `
+    <div class="cert-mini">
+      <div class="cert-mini-icon" style="background:${cert.bg_color||'rgba(0,180,216,.12)'};">
+        ${cert.logo_url
+          ? `<img src="${cert.logo_url}" alt="${cert.name}" style="width:44px;height:44px;object-fit:cover;display:block;">`
+          : `<span style="font-size:1.25rem;">${cert.icon||'✅'}</span>`}
+      </div>
+      <div class="cert-mini-name">${cert.name}</div>
+      <div class="cert-mini-sub">Certified</div>
+    </div>`).join('');
+
+  // ── Featured products: auto-sliding carousel ──
+  const prods = allProducts.length ? allProducts : FALLBACK.products;
+  const featured = prods.filter(p => p.is_featured === true || p.is_featured === 'true').slice(0, 5);
+  const showProds = featured.length ? featured : prods.slice(0, 3);
+
+  document.getElementById('hero-featured').innerHTML = showProds.map(p => {
+    const cat = CATS[p.category] || {label: p.category, icon: '💊'};
+    return `<div class="hero-slide">
+      <div class="feat-mini" onclick="openModal('${p.id}')">
+        ${p.image_url
+          ? `<img src="${p.image_url}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="feat-emoji" style="display:none;">${cat.icon||'💊'}</div>`
+          : `<div class="feat-emoji">${cat.icon||'💊'}</div>`}
+        <div>
+          <div class="feat-name">${p.name}</div>
+          <div class="feat-form">${p.form}</div>
+          <div class="feat-cat">${cat.label}</div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Build dots
+  const dotsEl = document.getElementById('hero-dots');
+  dotsEl.innerHTML = showProds.map((_, i) =>
+    `<div class="hero-slider-dot ${i===0?'active':''}" onclick="gotoHeroSlide(${i})"></div>`
+  ).join('');
+
+  // Kick off auto-slide
+  initHeroSlider(showProds.length);
+}
+
+// ═══════════════════════════════════════════════════════
+//  HERO FEATURED SLIDER
+// ═══════════════════════════════════════════════════════
+let heroSlideIdx = 0;
+let heroSlideTimer = null;
+let heroSlideCount = 0;
+
+function initHeroSlider(count) {
+  heroSlideCount = count;
+  heroSlideIdx = 0;
+  if (heroSlideTimer) clearInterval(heroSlideTimer);
+  if (count <= 1) return;
+  heroSlideTimer = setInterval(() => {
+    heroSlideIdx = (heroSlideIdx + 1) % heroSlideCount;
+    gotoHeroSlide(heroSlideIdx);
+  }, 3500);
+}
+
+function gotoHeroSlide(n) {
+  heroSlideIdx = n;
+  const track = document.getElementById('hero-featured');
+  if (track) track.style.transform = `translateX(-${n * 100}%)`;
+  document.querySelectorAll('.hero-slider-dot').forEach((d, i) => d.classList.toggle('active', i === n));
+}
+
+function renderStats(stats = []) {
+  document.getElementById('stats-bar').innerHTML = stats.map(s => `
+    <div class="stat-item">
+      <div class="stat-num">${s.num}</div>
+      <div class="stat-lbl">${s.label||s.lbl}</div>
+    </div>`).join('');
+}
+
+function renderAbout(c, values = []) {
+  document.getElementById('about-title').innerHTML = c.aboutTitle || '';
+  document.getElementById('about-desc').textContent = c.aboutDesc || '';
+  const stats = [{num:'15+',lbl:'Products',icon:'💊'},{num:'100+',lbl:'Distributors',icon:'🤝'},{num:'8+',lbl:'Therapeutic Areas',icon:'🔬'}];
+  document.getElementById('about-visual').innerHTML = stats.map(s => `
+    <div class="about-card">
+      <div class="about-card-icon">${s.icon}</div>
+      <div><div class="about-card-val">${s.num}</div><div class="about-card-lbl">${s.lbl}</div></div>
+    </div>`).join('');
+  document.getElementById('values-grid').innerHTML = values.map(v => `
+    <div class="val-card"><div class="val-icon">${v.icon}</div><div class="val-title">${v.title}</div><div class="val-desc">${v.description||v.desc}</div></div>`).join('');
+}
+
+function renderShowcase(products = []) {
+  const doubled = [...products, ...products];
+  document.getElementById('showcase-track').innerHTML = doubled.map(p => `
+    <div class="sc-card" onclick="openModal('${p.id}')">
+      <img class="sc-img" src="${p.image_url}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="sc-img-ph" style="display:none;">${CATS[p.category]?.icon||'💊'}</div>
+      <div class="sc-body"><div class="sc-name">${p.name}</div><div class="sc-form">${p.form}</div></div>
+    </div>`).join('');
+}
+
+function renderFilterBtns() {
+  const cats = ['all', ...new Set(allProducts.map(p => p.category).filter(Boolean))];
+  document.getElementById('filter-row').innerHTML = cats.map(cat => `
+    <button class="filter-btn ${cat===currentFilter?'active':''}" onclick="setFilter('${cat}',this)">
+      ${cat==='all'?'All Products':(CATS[cat]?.label||cat)}
+    </button>`).join('');
+}
+
+function filterProducts() {
+  const q = (document.getElementById('prod-search')?.value || '').toLowerCase();
+  const filtered = allProducts.filter(p => {
+    const cm = currentFilter === 'all' || p.category === currentFilter;
+    const inds = Array.isArray(p.indications) ? p.indications.join(' ') : '';
+    const sm = !q || p.name.toLowerCase().includes(q) ||
+      (p.composition||'').toLowerCase().includes(q) ||
+      inds.toLowerCase().includes(q);
+    return cm && sm;
+  });
+  const rc = document.getElementById('result-count');
+  if(rc) rc.textContent = filtered.length === allProducts.length
+    ? `Showing all ${allProducts.length} products`
+    : `Showing ${filtered.length} of ${allProducts.length} products`;
+  document.getElementById('prod-grid').innerHTML = filtered.map(renderProdCard).join('');
+  Object.values(carouselTimers).forEach(t => clearInterval(t));
+  carouselTimers = {};
+  filtered.forEach((p, i) => initCarousel(p.id, i, p));
+}
+
+function setFilter(cat, btn) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  filterProducts();
+}
+
+function filterByCat(cat) {
+  goto('products');
+  setTimeout(() => {
+    const btn = document.querySelector(`.filter-btn[onclick="setFilter('${cat}',this)"]`);
+    setFilter(cat, btn);
+  }, 400);
+}
+
+function renderProdCard(p) {
+  const cat = CATS[p.category] || {label:p.category, cls:'cat-gi', icon:'💊'};
+  const stockMap = {available:'Available',out_of_stock:'Out of Stock',coming_soon:'Coming Soon'};
+  const stockCls = {available:'stock-available',out_of_stock:'stock-out',coming_soon:'stock-coming'};
+  const inds = Array.isArray(p.indications) ? p.indications : (typeof p.indications === 'string' ? JSON.parse(p.indications||'[]') : []);
+  const indHTML = inds.slice(0,4).map(i => `<span class="ind-tag">${i}</span>`).join('');
+  const moreCount = inds.length > 4 ? inds.length - 4 : 0;
+  return `
+  <div class="prod-card" data-id="${p.id}">
+    <div class="prod-carousel" id="car-${p.id}" style="position:relative;">
+      <div class="carousel-track" id="trk-${p.id}">
+        <div class="carousel-slide">
+          <img src="${p.image_url}" alt="${p.name}" onerror="this.parentElement.style.background='linear-gradient(135deg,#001835,#002D66)'">
+        </div>
+        <div class="carousel-slide carousel-slide-info">
+          <div class="ci-title">${p.name}</div>
+          <div class="ci-form">${p.form}</div>
+          <div class="ci-tags">${inds.slice(0,3).map(i => `<span class="ci-tag">${i}</span>`).join('')}</div>
+        </div>
+        ${p.image_url_2 ? `<div class="carousel-slide"><img src="${p.image_url_2}" alt="${p.name} alt view"></div>` : ''}
+      </div>
+      <div class="carousel-dots" id="dots-${p.id}"></div>
+      ${p.stock_status !== 'available' ? `<span class="stock-badge ${stockCls[p.stock_status]||''}">${stockMap[p.stock_status]||''}</span>` : ''}
+    </div>
+    <div class="prod-body">
+      <span class="cat-pill ${cat.cls||'cat-gi'}">${cat.label}</span>
+      <div class="prod-name">${p.name}</div>
+      <div class="prod-form">💊 ${p.form}</div>
+      <div class="prod-comp"><strong style="font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:var(--mid);">Composition</strong><br>${p.composition}</div>
+      <div class="ind-title">Indications</div>
+      <div class="ind-tags">${indHTML}${moreCount?`<span class="prod-more">+${moreCount} more</span>`:''}</div>
+      <button class="prod-enquire" onclick="openModal('${p.id}');trackEvent('product_view',{product_id:'${p.id}',name:'${p.name.replace(/'/g,"\\'")}'})"">View Details &amp; Enquire</button>
+    </div>
+  </div>`;
+}
+
+function initCarousel(id, cardIdx, p) {
+  const inds = Array.isArray(p.indications) ? p.indications : [];
+  const slideCount = p.image_url_2 ? 3 : 2;
+  const dotsEl = document.getElementById('dots-'+id);
+  if (!dotsEl) return;
+  dotsEl.innerHTML = Array.from({length:slideCount},(_,i) =>
+    `<div class="carousel-dot ${i===0?'active':''}" onclick="gotoSlide('${id}',${i})"></div>`).join('');
+  let cur = 0;
+  carouselTimers[id] = setInterval(() => {
+    cur = (cur + 1) % slideCount;
+    gotoSlide(id, cur);
+  }, 3800 + cardIdx * 250);
+}
+
+function gotoSlide(id, n) {
+  const trk = document.getElementById('trk-'+id);
+  const dots = document.querySelectorAll(`#dots-${id} .carousel-dot`);
+  if (trk) trk.style.transform = `translateX(-${n*100}%)`;
+  dots.forEach((d,i) => d.classList.toggle('active', i===n));
+}
+
+function renderCerts(certs = [], desc = '') {
+  document.getElementById('certs-desc').textContent = desc;
+  document.getElementById('certs-grid').innerHTML = certs.map(cert => `
+    <div class="cert-card">
+      <div class="cert-logo-wrap" style="background:${cert.bg_color||'#F0F9FF'};">
+        ${cert.logo_url
+          ? `<img src="${cert.logo_url}" alt="${cert.name}">`
+          : `<span class="cert-icon-emoji">${cert.icon||'✅'}</span>`}
+      </div>
+      <div class="cert-card-name" style="color:${cert.color||'#0077B6'};">${cert.name}</div>
+      <div class="cert-card-desc">${cert.description||cert.desc||''}</div>
+    </div>`).join('');
+}
+
+function renderDistributor(c, benefits = []) {
+  document.getElementById('dist-title').innerHTML = c.distTitle || '';
+  document.getElementById('dist-desc').textContent = c.distDesc || '';
+  document.getElementById('dist-benefits').innerHTML = benefits.map(b => `
+    <div class="dist-benefit">
+      <div class="dist-b-icon">${b.icon}</div>
+      <div><div class="dist-b-title">${b.title}</div><div class="dist-b-desc">${b.description||b.desc||''}</div></div>
+    </div>`).join('');
+}
+
+function renderContact(c) {
+  document.getElementById('contact-items').innerHTML = [
+    {icon:'📍',label:'Registered Address',val:c.address||''},
+    {icon:'📞',label:'Phone',val:`<a href="tel:${c.phone}" style="color:var(--text);text-decoration:none;">${c.phone||''}</a>`},
+    {icon:'✉️',label:'Email',val:`<a href="mailto:${c.email}" style="color:var(--teal);text-decoration:none;">${c.email||''}</a>`},
+    {icon:'🕐',label:'Business Hours',val:c.hours||''},
+  ].map(item => `
+    <div class="contact-item">
+      <div class="contact-icon">${item.icon}</div>
+      <div><div class="contact-lbl">${item.label}</div><div class="contact-val">${item.val}</div></div>
+    </div>`).join('');
+}
+
+function renderFooter(c, certs = []) {
+  document.getElementById('footer-name').textContent = c.fullName || 'Nirmedix Pharma Pvt. Ltd.';
+  document.getElementById('footer-desc').textContent = c.footerDesc || '';
+  document.getElementById('footer-copy').textContent = c.copyright || '';
+  document.getElementById('footer-contact').innerHTML = `${c.address||''}<br><br><a href="tel:${c.phone}" style="color:rgba(255,255,255,.55);text-decoration:none;">${c.phone||''}</a><br><a href="mailto:${c.email}" style="color:var(--teal);text-decoration:none;">${c.email||''}</a>`;
+  document.getElementById('footer-tags').innerHTML = certs.map(c2 => `<span class="footer-tag">${c2.name}</span>`).join('');
+}
+
+function setupWhatsApp(c) {
+  const btn = document.getElementById('wa-btn');
+  const num = c.whatsapp || '91XXXXXXXXXX';
+  const msg = encodeURIComponent(c.whatsapp_msg || 'Hello, I am interested in your pharmaceutical products.');
+  btn.href = `https://wa.me/${num}?text=${msg}`;
+  if (num === '91XXXXXXXXXX') btn.style.display = 'none';
+}
+
+// ═══════════════════════════════════════════════════════
+//  MODAL
+// ═══════════════════════════════════════════════════════
+function openModal(id) {
+  const p = allProducts.find(x => String(x.id) === String(id));
+  if (!p) return;
+  const cat = CATS[p.category] || {label:p.category};
+  const inds = Array.isArray(p.indications) ? p.indications : (typeof p.indications === 'string' ? JSON.parse(p.indications||'[]') : []);
+  document.getElementById('m-cat').textContent = cat.label;
+  document.getElementById('m-name').textContent = p.name;
+  document.getElementById('m-form').textContent = p.form;
+  document.getElementById('m-comp').textContent = p.composition;
+  document.getElementById('m-desc').textContent = p.description || '';
+  document.getElementById('m-inds').innerHTML = inds.map(i =>
+    `<span style="background:#EBF8FF;color:#1E40AF;border-radius:6px;padding:.3rem .7rem;font-size:.8rem;font-weight:600;">${i}</span>`).join('');
+  const slides = [
+    `<div class="modal-slide"><img src="${p.image_url}" alt="${p.name}" onerror="this.parentElement.style.background='linear-gradient(135deg,#001835,#002D66)'"></div>`,
+    `<div class="modal-slide" style="background:linear-gradient(135deg,var(--navy),var(--navy-l));display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;text-align:center;">
+      <div style="font-family:'Playfair Display',serif;font-size:1.6rem;color:white;margin-bottom:.75rem;">${p.name}</div>
+      <div style="color:rgba(255,255,255,.55);font-size:.83rem;margin-bottom:1rem;">${p.form}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;">${inds.slice(0,5).map(i=>`<span style="background:rgba(0,180,216,.2);border:1px solid rgba(0,180,216,.4);color:var(--teal-l);font-size:.7rem;padding:.2rem .6rem;border-radius:100px;">${i}</span>`).join('')}</div>
+    </div>`,
+    ...(p.image_url_2 ? [`<div class="modal-slide"><img src="${p.image_url_2}" alt="${p.name}"></div>`] : [])
+  ];
+  document.getElementById('m-slides').innerHTML = slides.join('');
+  document.getElementById('m-dots').innerHTML = slides.map((_,i) =>
+    `<div class="modal-dot ${i===0?'active':''}" onclick="gotoModalSlide(${i})"></div>`).join('');
+  modalSlide = 0;
+  document.getElementById('prodModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  trackEvent('product_view', {product_id: id, name: p.name});
+  // Increment view count
+  if (IS_CONFIGURED && sb) sb.from('products').update({view_count: (p.view_count||0)+1}).eq('id', p.id).then(()=>{});
+}
+
+function closeModal() {
+  document.getElementById('prodModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function modalNav(dir) { gotoModalSlide((modalSlide + dir + 10) % document.querySelectorAll('#m-slides .modal-slide').length); }
+function gotoModalSlide(n) {
+  modalSlide = n;
+  document.getElementById('m-slides').style.transform = `translateX(-${n*100}%)`;
+  document.querySelectorAll('#m-dots .modal-dot').forEach((d,i) => d.classList.toggle('active', i===n));
+}
+
+// ═══════════════════════════════════════════════════════
+//  FORMS
+// ═══════════════════════════════════════════════════════
+async function handleEnquiry(e) {
+  e.preventDefault();
+  const btn = document.getElementById('enq-btn');
+  const btnt = document.getElementById('enq-btn-txt');
+  btn.disabled = true; btnt.textContent = 'Sending…';
+  const fd = new FormData(e.target);
+  const payload = {name:fd.get('name'),phone:fd.get('phone'),email:fd.get('email'),state:fd.get('state'),business_type:fd.get('business_type'),message:fd.get('message'),source:'distributor_form'};
+  try {
+    if (IS_CONFIGURED && sb) { const {error} = await sb.from('enquiries').insert(payload); if(error) throw error; }
+    await trackEvent('enquiry_submit', {source:'distributor_form'});
+    document.getElementById('enqForm').style.display = 'none';
+    document.getElementById('enq-success').style.display = 'block';
+  } catch(err) {
+    showToast('Something went wrong. Please try again.'); btn.disabled=false; btnt.textContent='Submit Enquiry →';
+  }
+}
+
+async function handleContact(e) {
+  e.preventDefault();
+  const btn = document.getElementById('contact-btn');
+  const btnt = document.getElementById('contact-btn-txt');
+  btn.disabled = true; btnt.textContent = 'Sending…';
+  const fd = new FormData(e.target);
+  const payload = {name:fd.get('name'),email:fd.get('email'),message:`Subject: ${fd.get('subject')}\n\n${fd.get('message')}`,source:'contact_form'};
+  try {
+    if (IS_CONFIGURED && sb) { const {error} = await sb.from('enquiries').insert(payload); if(error) throw error; }
+    await trackEvent('enquiry_submit', {source:'contact_form'});
+    document.getElementById('contactForm').style.display = 'none';
+    document.getElementById('contact-success').style.display = 'block';
+  } catch(err) {
+    showToast('Something went wrong. Please try again.'); btn.disabled=false; btnt.textContent='Send Message →';
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+//  ANALYTICS
+// ═══════════════════════════════════════════════════════
+async function trackEvent(type, data = {}) {
+  if (!IS_CONFIGURED || !sb) return;
+  try { await sb.from('analytics_events').insert({event_type: type, data}); } catch {}
+}
+
+// ═══════════════════════════════════════════════════════
+//  NAVIGATION & UI
+// ═══════════════════════════════════════════════════════
+function goto(id) {
+  const el = document.getElementById(id);
+  if (el) el.scrollIntoView({behavior:'smooth'});
+}
+
+function openDrawer() {
+  document.getElementById('mobOverlay').classList.add('open');
+  document.getElementById('mobDrawer').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeDrawer() {
+  document.getElementById('mobOverlay').classList.remove('open');
+  document.getElementById('mobDrawer').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Active nav on scroll
+const sObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.s === e.target.id));
+    }
+  });
+}, {threshold: .3});
+['home','about','products','certificates','distributor','contact'].forEach(s => {
+  const el = document.getElementById(s); if (el) sObserver.observe(el);
+});
+window.addEventListener('scroll', () => document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20));
+
+// Scroll fade animations
+function setupScrollAnimations() {
+  const ao = new IntersectionObserver(entries => { entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('vis'); }); }, {threshold:.1});
+  document.querySelectorAll('.fade-up,.fade-up-2,.fade-up-3').forEach(el => ao.observe(el));
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 4000);
+}
+
+// ═══════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════
+loadAll();
+</script>
+</body>
+</html>

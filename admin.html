@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nirmedix Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --navy:#00224A;--navy-l:#003370;--navy-d:#000F20;
+  --teal:#00B4D8;--teal-l:#90E0EF;
+  --green:#10B981;--red:#EF4444;--orange:#F59E0B;--purple:#8B5CF6;
+  --white:#FFF;--off:#F1F5F9;--border:#E2E8F0;
+  --text:#0F172A;--mid:#475569;--muted:#94A3B8;
+  --sidebar:245px;
+  --shadow:0 1px 3px rgba(0,0,0,.1);
+  --shadow-md:0 4px 6px -1px rgba(0,0,0,.1);
+  --shadow-lg:0 10px 25px rgba(0,0,0,.15);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Nunito Sans',sans-serif;background:#F1F5F9;color:var(--text);min-height:100vh;}
+
+/* ── LOGIN ── */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#000F20 0%,#00224A 55%,#003370 100%);position:fixed;inset:0;z-index:1000;}
+.lbox{background:white;border-radius:20px;padding:2.75rem;width:100%;max-width:410px;box-shadow:var(--shadow-lg);}
+.llogo{display:flex;align-items:center;gap:.75rem;margin-bottom:2rem;}
+.lmark{width:46px;height:46px;background:linear-gradient(135deg,var(--teal),#0077B6);border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:600;color:white;font-size:1.2rem;}
+.lbrand{font-size:1.05rem;font-weight:800;color:var(--navy);}
+.lbrand-s{font-size:.68rem;color:var(--muted);font-weight:600;letter-spacing:.06em;text-transform:uppercase;}
+.lh{font-size:1.5rem;font-weight:800;color:var(--navy);margin-bottom:.35rem;}
+.lp{font-size:.84rem;color:var(--mid);margin-bottom:1.75rem;}
+.linp{width:100%;padding:.72rem 1rem;border:1.5px solid var(--border);border-radius:8px;font-family:'Nunito Sans',sans-serif;font-size:.9rem;outline:none;color:var(--text);transition:border-color .2s;margin-bottom:.9rem;}
+.linp:focus{border-color:var(--teal);}
+.lbtn{width:100%;padding:.85rem;background:var(--navy);color:white;border:none;border-radius:8px;font-weight:800;font-size:.9rem;cursor:pointer;transition:all .2s;font-family:'Nunito Sans',sans-serif;}
+.lbtn:hover{background:var(--navy-l);}
+.lbtn:disabled{opacity:.6;cursor:not-allowed;}
+.lerr{background:#FEF2F2;border:1px solid #FECACA;color:#DC2626;border-radius:8px;padding:.65rem 1rem;font-size:.82rem;margin-bottom:.85rem;display:none;}
+.lhint{text-align:center;margin-top:1.1rem;font-size:.78rem;color:var(--muted);}
+.lhint code{color:var(--teal);font-weight:700;font-family:'JetBrains Mono',monospace;}
+
+/* ── LAYOUT ── */
+#app{display:none;}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sidebar);background:var(--navy-d);display:flex;flex-direction:column;z-index:50;border-right:1px solid rgba(255,255,255,.05);overflow-y:auto;}
+.sb-logo{padding:1.25rem 1.1rem;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:.7rem;}
+.sb-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--teal),#0077B6);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:600;color:white;font-size:.9rem;flex-shrink:0;}
+.sb-brand{font-size:.85rem;font-weight:800;color:white;line-height:1.2;}
+.sb-brand-s{font-size:.57rem;color:var(--teal-l);opacity:.6;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.08em;}
+.sbnav{padding:.75rem 0;flex:1;}
+.sbsec{font-size:.57rem;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.2);padding:.7rem 1.1rem .3rem;}
+.sbitem{display:flex;align-items:center;gap:.65rem;padding:.68rem 1.1rem;color:rgba(255,255,255,.5);font-size:.82rem;font-weight:600;cursor:pointer;transition:all .2s;border-left:3px solid transparent;user-select:none;}
+.sbitem:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.04);}
+.sbitem.active{color:var(--teal);background:rgba(0,180,216,.08);border-left-color:var(--teal);}
+.sbicon{font-size:.9rem;width:17px;text-align:center;flex-shrink:0;}
+.sb-badge{margin-left:auto;background:var(--red);color:white;font-size:.6rem;font-weight:800;padding:.12rem .42rem;border-radius:100px;min-width:16px;text-align:center;display:none;}
+.sb-footer{padding:1rem 1.1rem;border-top:1px solid rgba(255,255,255,.06);}
+.sb-user{display:flex;align-items:center;gap:.65rem;margin-bottom:.7rem;}
+.sb-av{width:32px;height:32px;background:rgba(0,180,216,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--teal);font-size:.85rem;flex-shrink:0;}
+.sb-email{font-size:.73rem;font-weight:600;color:rgba(255,255,255,.7);word-break:break-all;}
+.sb-out{width:100%;padding:.5rem;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);border-radius:6px;color:#EF4444;font-size:.76rem;font-weight:700;cursor:pointer;font-family:'Nunito Sans',sans-serif;}
+.sb-out:hover{background:rgba(239,68,68,.2);}
+
+.main{margin-left:var(--sidebar);min-height:100vh;display:flex;flex-direction:column;}
+.topbar{background:white;border-bottom:1px solid var(--border);padding:0 1.75rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:40;box-shadow:var(--shadow);}
+.tb-h{font-size:1.1rem;font-weight:800;color:var(--navy);}
+.tb-s{font-size:.74rem;color:var(--mid);}
+.tb-actions{display:flex;align-items:center;gap:.6rem;}
+.content{padding:1.75rem;flex:1;}
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* ── BUTTONS ── */
+.btn{padding:.55rem 1.1rem;border:none;border-radius:7px;font-weight:700;font-size:.78rem;cursor:pointer;transition:all .2s;font-family:'Nunito Sans',sans-serif;display:inline-flex;align-items:center;gap:.4rem;}
+.btn-teal{background:var(--teal);color:var(--navy-d);}
+.btn-teal:hover{background:#00C9F5;transform:translateY(-1px);}
+.btn-green{background:var(--green);color:white;}
+.btn-green:hover{background:#059669;}
+.btn-red{background:var(--red);color:white;}
+.btn-red:hover{background:#DC2626;}
+.btn-ghost{background:var(--off);color:var(--navy);border:1px solid var(--border);}
+.btn-ghost:hover{background:var(--border);}
+.btn-sm{padding:.32rem .7rem;font-size:.72rem;}
+
+/* ── CARDS ── */
+.card{background:white;border-radius:10px;padding:1.5rem;border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:1.1rem;}
+.card-title{font-size:.92rem;font-weight:800;color:var(--navy);margin-bottom:.25rem;}
+.card-sub{font-size:.75rem;color:var(--mid);margin-bottom:1.25rem;}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
+.kpi{background:white;border-radius:10px;padding:1.25rem;border:1px solid var(--border);box-shadow:var(--shadow);}
+.kpi-icon{font-size:1.35rem;margin-bottom:.6rem;}
+.kpi-val{font-size:1.9rem;font-weight:800;line-height:1;margin-bottom:.2rem;}
+.kpi-lbl{font-size:.73rem;color:var(--mid);font-weight:600;}
+.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:1rem;margin-bottom:1.25rem;}
+.chart-card{background:white;border-radius:10px;padding:1.25rem;border:1px solid var(--border);box-shadow:var(--shadow);}
+.chart-title{font-size:.85rem;font-weight:800;color:var(--navy);margin-bottom:.9rem;}
+.chart-wrap{position:relative;height:190px;}
+
+/* ── TABLES ── */
+.table-wrap{background:white;border-radius:10px;border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;}
+.dtable{width:100%;border-collapse:collapse;}
+.dtable th{background:var(--off);font-size:.68rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--mid);padding:.7rem 1rem;text-align:left;border-bottom:1px solid var(--border);}
+.dtable td{padding:.8rem 1rem;border-bottom:1px solid var(--border);font-size:.82rem;vertical-align:middle;}
+.dtable tr:last-child td{border-bottom:none;}
+.dtable tr:hover td{background:#FAFCFF;}
+.thumb{width:46px;height:46px;border-radius:8px;object-fit:contain;background:var(--off);border:1px solid var(--border);}
+.thumb-ph{width:46px;height:46px;border-radius:8px;background:linear-gradient(135deg,var(--navy),var(--navy-l));display:flex;align-items:center;justify-content:center;color:white;font-size:1rem;}
+.pill{display:inline-block;font-size:.61rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:.16rem .52rem;border-radius:100px;}
+.pill-gi{background:#D1FAE5;color:#065F46;} .pill-pain{background:#FEE2E2;color:#991B1B;}
+.pill-liver{background:#FEF3C7;color:#92400E;} .pill-allergy{background:#EDE9FE;color:#5B21B6;}
+.pill-nutrition{background:#DBEAFE;color:#1E40AF;} .pill-pediatric{background:#FCE7F3;color:#9D174D;}
+.pill-antibiotic{background:#F0FDF4;color:#166534;}
+.pill-new{background:#DBEAFE;color:#1E40AF;} .pill-contacted{background:#FEF3C7;color:#92400E;} .pill-closed{background:#D1FAE5;color:#065F46;}
+.pill-available{background:#D1FAE5;color:#065F46;} .pill-out_of_stock{background:#FEE2E2;color:#991B1B;} .pill-coming_soon{background:#FEF3C7;color:#92400E;}
+.row-acts{display:flex;gap:.35rem;flex-wrap:wrap;}
+.ra{padding:.28rem .62rem;border-radius:5px;border:none;font-size:.7rem;font-weight:700;cursor:pointer;font-family:'Nunito Sans',sans-serif;}
+.ra-edit{background:#EFF6FF;color:#1D4ED8;}
+.ra-edit:hover{background:#DBEAFE;}
+.ra-del{background:#FEF2F2;color:#DC2626;}
+.ra-del:hover{background:#FEE2E2;}
+.ra-toggle{background:#F0FDF4;color:#166534;font-size:.7rem;}
+.ra-toggle.off{background:#FEF3C7;color:#92400E;}
+
+/* ── FORMS ── */
+.fg{margin-bottom:.9rem;}
+.flbl{display:block;font-size:.68rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--mid);margin-bottom:.36rem;}
+.finp{width:100%;padding:.62rem .9rem;border:1.5px solid var(--border);border-radius:7px;font-family:'Nunito Sans',sans-serif;font-size:.86rem;color:var(--text);outline:none;transition:border-color .2s;background:white;}
+.finp:focus{border-color:var(--teal);}
+.ftextarea{width:100%;padding:.62rem .9rem;border:1.5px solid var(--border);border-radius:7px;font-family:'Nunito Sans',sans-serif;font-size:.86rem;color:var(--text);outline:none;resize:vertical;min-height:80px;transition:border-color .2s;}
+.ftextarea:focus{border-color:var(--teal);}
+.fselect{width:100%;padding:.62rem .9rem;border:1.5px solid var(--border);border-radius:7px;font-family:'Nunito Sans',sans-serif;font-size:.86rem;color:var(--text);outline:none;appearance:none;background:white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394A3B8' fill='none' stroke-width='1.5'%3E%3C/path%3E%3C/svg%3E") no-repeat right .9rem center;cursor:pointer;}
+.fselect:focus{border-color:var(--teal);}
+.fhint{font-size:.7rem;color:var(--muted);margin-top:.25rem;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.frow3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.9rem;}
+.sep{height:1px;background:var(--border);margin:.9rem 0;}
+.fcheck{display:flex;align-items:center;gap:.45rem;cursor:pointer;font-size:.84rem;font-weight:600;color:var(--navy);}
+.fcheck input{width:15px;height:15px;accent-color:var(--teal);cursor:pointer;}
+
+/* ── IMAGE UPLOAD ── */
+.img-upload{border:2px dashed var(--border);border-radius:10px;padding:1.35rem;text-align:center;cursor:pointer;transition:all .2s;position:relative;background:var(--off);}
+.img-upload:hover{border-color:var(--teal);background:#F0FDFF;}
+.img-upload input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;}
+.img-upload img.prev{max-width:160px;max-height:110px;border-radius:8px;margin:0 auto .7rem;display:none;object-fit:contain;border:1px solid var(--border);}
+.up-icon{font-size:1.6rem;margin-bottom:.35rem;}
+.up-text{font-size:.8rem;color:var(--mid);font-weight:600;}
+.up-sub{font-size:.7rem;color:var(--muted);margin-top:.12rem;}
+
+/* ── MODALS ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:center;justify-content:center;padding:1.25rem;}
+.modal-bg.open{display:flex;}
+.mbox{background:white;border-radius:16px;width:100%;box-shadow:var(--shadow-lg);max-height:92vh;display:flex;flex-direction:column;}
+.mhdr{background:var(--navy);padding:1.1rem 1.4rem;border-radius:16px 16px 0 0;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+.mhdr-title{color:white;font-weight:800;font-size:.95rem;}
+.mx{background:none;border:none;color:rgba(255,255,255,.6);font-size:1.3rem;cursor:pointer;line-height:1;}
+.mbody{padding:1.4rem;overflow-y:auto;flex:1;}
+.mfoot{padding:.9rem 1.4rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:.6rem;flex-shrink:0;}
+
+/* ── CERT ADMIN ── */
+.cert-admin-card{background:white;border:1px solid var(--border);border-radius:10px;padding:1.1rem 1.25rem;display:flex;align-items:center;gap:1rem;margin-bottom:.7rem;box-shadow:var(--shadow);}
+.cert-admin-card:hover{border-color:var(--teal);}
+.cert-icon-big{font-size:1.75rem;width:44px;text-align:center;flex-shrink:0;}
+.cert-name{font-weight:800;font-size:.9rem;}
+.cert-desc{font-size:.76rem;color:var(--mid);margin-top:.12rem;}
+.cert-actions{margin-left:auto;display:flex;gap:.4rem;}
+
+/* ── ENQUIRY ROW ── */
+.enq-row{padding:.9rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:.85rem;transition:background .15s;cursor:pointer;}
+.enq-row:hover{background:#FAFCFF;}
+.enq-row:last-child{border-bottom:none;}
+.enq-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--teal),#0077B6);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:.8rem;flex-shrink:0;}
+.enq-name{font-size:.86rem;font-weight:700;color:var(--navy);}
+.enq-meta{font-size:.73rem;color:var(--mid);margin-top:.08rem;}
+.enq-msg{font-size:.79rem;color:var(--mid);margin-top:.28rem;line-height:1.5;}
+.enq-right{margin-left:auto;text-align:right;flex-shrink:0;}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;min-width:240px;background:var(--navy-d);color:white;border-radius:10px;padding:.85rem 1.25rem;font-size:.83rem;font-weight:600;opacity:0;transform:translateY(20px);transition:all .35s;pointer-events:none;box-shadow:var(--shadow-lg);border-left:4px solid var(--teal);}
+#toast.show{opacity:1;transform:translateY(0);}
+#toast.err{border-left-color:var(--red);}
+#toast.ok{border-left-color:var(--green);}
+
+/* ── SECTION BAR ── */
+.secbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;}
+.secbar-h{font-size:.93rem;font-weight:800;color:var(--navy);}
+.secbar-s{font-size:.74rem;color:var(--mid);}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:3rem 1rem;color:var(--muted);}
+.empty-icon{font-size:2.25rem;margin-bottom:.7rem;}
+.empty-h{font-size:.9rem;font-weight:700;color:var(--mid);margin-bottom:.25rem;}
+
+/* ── STATUS/STOCK COLS ── */
+.inline-switch{position:relative;display:inline-block;width:38px;height:21px;flex-shrink:0;}
+.inline-switch input{opacity:0;width:0;height:0;}
+.sw-sl{position:absolute;cursor:pointer;inset:0;background:#CBD5E1;border-radius:100px;transition:.2s;}
+.sw-sl:before{content:'';position:absolute;height:15px;width:15px;left:3px;bottom:3px;background:white;border-radius:50%;transition:.2s;}
+input:checked+.sw-sl{background:var(--teal);}
+input:checked+.sw-sl:before{transform:translateX(17px);}
+
+@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr);}.charts-row{grid-template-columns:1fr;}.frow,.frow3{grid-template-columns:1fr;}}
+/* ── IMAGE ADJUSTER ── */
+.adj-mode-btn{padding:.3rem .7rem;border-radius:6px;border:1.5px solid var(--border);background:white;font-size:.71rem;font-weight:700;cursor:pointer;font-family:'Nunito Sans',sans-serif;color:var(--mid);transition:all .15s;}
+.adj-mode-btn:hover{border-color:var(--teal);color:var(--teal);}
+.adj-mode-btn.active{border-color:var(--teal);background:rgba(0,180,216,.08);color:var(--navy);}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+
+<!-- ════════════════ LOGIN ════════════════ -->
+<div id="login-screen">
+  <div class="lbox">
+    <div class="llogo">
+      <div class="lmark">N</div>
+      <div><div class="lbrand">Nirmedix Pharma</div><div class="lbrand-s">Admin Panel</div></div>
+    </div>
+    <h2 class="lh">Welcome Back 👋</h2>
+    <p class="lp">Sign in with your Supabase admin account to manage website content.</p>
+    <div class="lerr" id="lerr">Invalid email or password.</div>
+    <input class="linp" type="email" id="l-email" placeholder="admin@nirmedixpharma.com">
+    <input class="linp" type="password" id="l-pass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="lbtn" id="lbtn" onclick="doLogin()">Sign In →</button>
+    <div class="lhint">
+      Setup: Supabase → Authentication → Add User<br>
+      Then update <code>SUPABASE_URL</code> &amp; <code>SUPABASE_ANON_KEY</code> in both files
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ APP ════════════════ -->
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-mark">N</div>
+      <div><div class="sb-brand">Nirmedix Admin</div><div class="sb-brand-s">Control Panel</div></div>
+    </div>
+    <nav class="sbnav">
+      <div class="sbsec">Overview</div>
+      <div class="sbitem active" data-p="dashboard"    onclick="go('dashboard')"><span class="sbicon">🏠</span>Dashboard</div>
+      <div class="sbitem"        data-p="analytics"    onclick="go('analytics')"><span class="sbicon">📈</span>Analytics</div>
+      <div class="sbsec">Catalogue</div>
+      <div class="sbitem"        data-p="products"     onclick="go('products')"><span class="sbicon">💊</span>Products</div>
+      <div class="sbitem"        data-p="certs"        onclick="go('certs')"><span class="sbicon">🏅</span>Certifications</div>
+      <div class="sbsec">Leads</div>
+      <div class="sbitem"        data-p="enquiries"    onclick="go('enquiries')"><span class="sbicon">📥</span>Enquiries<span class="sb-badge" id="new-enq-badge">0</span></div>
+      <div class="sbsec">Content</div>
+      <div class="sbitem"        data-p="hero"         onclick="go('hero')"><span class="sbicon">🎨</span>Hero &amp; Banner</div>
+      <div class="sbitem"        data-p="about"        onclick="go('about')"><span class="sbicon">ℹ️</span>About Section</div>
+      <div class="sbitem"        data-p="stats-ed"     onclick="go('stats-ed')"><span class="sbicon">📊</span>Stats Bar</div>
+      <div class="sbitem"        data-p="values"       onclick="go('values')"><span class="sbicon">⭐</span>Values &amp; Benefits</div>
+      <div class="sbsec">Settings</div>
+      <div class="sbitem"        data-p="company"      onclick="go('company')"><span class="sbicon">🏢</span>Company Info</div>
+      <div class="sbitem"        data-p="seo"          onclick="go('seo')"><span class="sbicon">🔍</span>SEO Settings</div>
+      <div class="sbitem"        data-p="whatsapp"     onclick="go('whatsapp')"><span class="sbicon">💬</span>WhatsApp</div>
+      <div class="sbitem"        data-p="contact-ed"   onclick="go('contact-ed')"><span class="sbicon">📞</span>Contact Info</div>
+    </nav>
+    <div class="sb-footer">
+      <div class="sb-user"><div class="sb-av">👤</div><div class="sb-email" id="sb-email">admin</div></div>
+      <button class="sb-out" onclick="doLogout()">Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div><div class="tb-h" id="tb-h">Dashboard</div><div class="tb-s" id="tb-s">Overview</div></div>
+      <div class="tb-actions">
+        <a href="index.html" target="_blank" class="btn btn-ghost" style="text-decoration:none;">🌐 View Site</a>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- ══ DASHBOARD ══ -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="kpi-grid" id="kpi-grid">
+          <div class="kpi"><div class="kpi-icon">💊</div><div class="kpi-val" id="kpi-prods">—</div><div class="kpi-lbl">Total Products</div></div>
+          <div class="kpi"><div class="kpi-icon">📥</div><div class="kpi-val" id="kpi-enqs">—</div><div class="kpi-lbl">Enquiries</div></div>
+          <div class="kpi"><div class="kpi-icon">👁</div><div class="kpi-val" id="kpi-views">—</div><div class="kpi-lbl">Page Views (30d)</div></div>
+          <div class="kpi"><div class="kpi-icon">🏅</div><div class="kpi-val" id="kpi-certs">—</div><div class="kpi-lbl">Certifications</div></div>
+        </div>
+        <div class="charts-row">
+          <div class="chart-card"><div class="chart-title">Traffic — Last 14 Days</div><div class="chart-wrap"><canvas id="ch-traffic"></canvas></div></div>
+          <div class="chart-card"><div class="chart-title">Enquiry Sources</div><div class="chart-wrap"><canvas id="ch-sources"></canvas></div></div>
+        </div>
+        <div class="card" style="padding:0;overflow:hidden;">
+          <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+            <span style="font-size:.87rem;font-weight:800;color:var(--navy);">Recent Enquiries</span>
+            <button class="btn btn-ghost btn-sm" onclick="go('enquiries')">View All →</button>
+          </div>
+          <div id="dash-enqs"></div>
+        </div>
+      </div>
+
+      <!-- ══ ANALYTICS ══ -->
+      <div class="panel" id="panel-analytics">
+        <div class="charts-row" style="grid-template-columns:1fr 1fr;">
+          <div class="chart-card"><div class="chart-title">Daily Page Views (30d)</div><div class="chart-wrap"><canvas id="ch-views30"></canvas></div></div>
+          <div class="chart-card"><div class="chart-title">Enquiries Over Time</div><div class="chart-wrap"><canvas id="ch-enqs30"></canvas></div></div>
+        </div>
+        <div class="chart-card" style="margin-top:1rem;"><div class="chart-title">Top Products by Views</div><div class="chart-wrap" style="height:230px;"><canvas id="ch-topprods"></canvas></div></div>
+      </div>
+
+      <!-- ══ PRODUCTS ══ -->
+      <div class="panel" id="panel-products">
+        <div class="secbar">
+          <div><div class="secbar-h">Product Catalogue</div><div class="secbar-s" id="prod-count"></div></div>
+          <button class="btn btn-green" onclick="openProdModal()">+ Add Product</button>
+        </div>
+        <div style="display:flex;gap:.6rem;margin-bottom:.85rem;flex-wrap:wrap;">
+          <input class="finp" id="pfilt" placeholder="🔍 Filter..." oninput="renderProdsTable()" style="max-width:240px;">
+          <select class="fselect" id="pfilt-cat" onchange="renderProdsTable()" style="max-width:190px;">
+            <option value="">All Categories</option>
+            <option value="gi">GI</option><option value="pain">Pain</option><option value="liver">Liver</option>
+            <option value="allergy">Allergy</option><option value="nutrition">Nutrition</option>
+            <option value="pediatric">Paediatric</option><option value="antibiotic">Antibiotic</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table class="dtable">
+            <thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Stock</th><th>Featured</th><th>Active</th><th>Views</th><th>Actions</th></tr></thead>
+            <tbody id="prod-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══ CERTS ══ -->
+      <div class="panel" id="panel-certs">
+        <div class="secbar">
+          <div><div class="secbar-h">Certifications</div><div class="secbar-s">Shown in the compliance section</div></div>
+          <button class="btn btn-green" onclick="openCertModal()">+ Add Certificate</button>
+        </div>
+        <div id="certs-list"></div>
+      </div>
+
+      <!-- ══ ENQUIRIES ══ -->
+      <div class="panel" id="panel-enquiries">
+        <div class="secbar">
+          <div><div class="secbar-h">Enquiries &amp; Leads</div><div class="secbar-s" id="enq-count"></div></div>
+          <div style="display:flex;gap:.6rem;">
+            <select class="fselect" id="enq-filter" onchange="loadEnquiries()" style="max-width:150px;">
+              <option value="">All</option><option value="new">New</option>
+              <option value="contacted">Contacted</option><option value="closed">Closed</option>
+            </select>
+            <button class="btn btn-ghost btn-sm" onclick="exportEnquiries()">📊 Export CSV</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="dtable">
+            <thead><tr><th>Name</th><th>Phone</th><th>State</th><th>Type</th><th>Status</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody id="enq-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══ HERO ══ -->
+      <div class="panel" id="panel-hero">
+        <div class="card">
+          <div class="card-title">🎨 Hero Section</div>
+          <div class="card-sub">Use <code style="background:#f0f4f8;padding:.1rem .3rem;border-radius:4px;">&lt;span class='accent'&gt;word&lt;/span&gt;</code> to make a word teal &amp; italic in the title</div>
+          <div class="fg"><label class="flbl">Hero Title (HTML allowed)</label><textarea class="ftextarea" id="h-title" rows="3"></textarea></div>
+          <div class="fg"><label class="flbl">Hero Description</label><textarea class="ftextarea" id="h-desc" rows="4"></textarea></div>
+          <div class="fg"><label class="flbl">Products Section Title</label><textarea class="ftextarea" id="h-prod-title" rows="2"></textarea></div>
+        </div>
+        <button class="btn btn-teal" onclick="saveHero()">💾 Save Hero</button>
+      </div>
+
+      <!-- ══ ABOUT ══ -->
+      <div class="panel" id="panel-about">
+        <div class="card">
+          <div class="card-title">ℹ️ About Section</div>
+          <div class="fg"><label class="flbl">Section Title</label><input class="finp" id="a-title"></div>
+          <div class="fg"><label class="flbl">Description</label><textarea class="ftextarea" id="a-desc" rows="5"></textarea></div>
+          <div class="sep"></div>
+          <div class="fg"><label class="flbl">Certifications Section Description</label><textarea class="ftextarea" id="a-certs-desc" rows="3"></textarea></div>
+          <div class="sep"></div>
+          <div class="fg"><label class="flbl">Distributor Title</label><input class="finp" id="a-dist-title"></div>
+          <div class="fg"><label class="flbl">Distributor Description</label><textarea class="ftextarea" id="a-dist-desc" rows="3"></textarea></div>
+        </div>
+        <button class="btn btn-teal" onclick="saveAbout()">💾 Save About</button>
+      </div>
+
+      <!-- ══ STATS ══ -->
+      <div class="panel" id="panel-stats-ed">
+        <div class="card">
+          <div class="card-title">📊 Stats Bar</div>
+          <div class="card-sub">Numbers shown below the hero banner (max 4)</div>
+          <div id="stats-rows"></div>
+          <button class="btn btn-green btn-sm" onclick="addStatRow()" style="margin-top:.5rem;">+ Add Stat</button>
+        </div>
+        <button class="btn btn-teal" onclick="saveStats()">💾 Save Stats</button>
+      </div>
+
+      <!-- ══ VALUES ══ -->
+      <div class="panel" id="panel-values">
+        <div class="card">
+          <div class="card-title">⭐ Company Values</div>
+          <div id="values-ed"></div>
+        </div>
+        <button class="btn btn-teal" onclick="saveValues()">💾 Save Values</button>
+        <div class="card" style="margin-top:1rem;">
+          <div class="card-title">🤝 Distributor Benefits</div>
+          <div id="benefits-ed"></div>
+        </div>
+        <button class="btn btn-teal" onclick="saveBenefits()" style="margin-top:.75rem;">💾 Save Benefits</button>
+      </div>
+
+      <!-- ══ COMPANY ══ -->
+      <div class="panel" id="panel-company">
+        <div class="card">
+          <div class="card-title">🏢 Company Information</div>
+          <div class="frow">
+            <div class="fg"><label class="flbl">Short Name</label><input class="finp" id="co-name"></div>
+            <div class="fg"><label class="flbl">Full Legal Name</label><input class="finp" id="co-fullname"></div>
+          </div>
+          <div class="fg"><label class="flbl">Tagline (hero badge)</label><input class="finp" id="co-tagline"></div>
+          <div class="fg"><label class="flbl">Footer Description</label><textarea class="ftextarea" id="co-footer-desc" rows="3"></textarea></div>
+          <div class="fg"><label class="flbl">Copyright Text</label><input class="finp" id="co-copyright"></div>
+        </div>
+        <button class="btn btn-teal" onclick="saveCompany()">💾 Save Company Info</button>
+      </div>
+
+      <!-- ══ SEO ══ -->
+      <div class="panel" id="panel-seo">
+        <div class="card">
+          <div class="card-title">🔍 SEO Settings</div>
+          <div class="card-sub">Controls how the website appears in Google search results and social media previews</div>
+          <div class="fg"><label class="flbl">Page Title</label><input class="finp" id="seo-title" placeholder="Nirmedix Pharma — Pharmaceutical Excellence"><div class="fhint">Keep under 60 characters</div></div>
+          <div class="fg"><label class="flbl">Meta Description</label><textarea class="ftextarea" id="seo-desc" rows="3" placeholder="Premium pharma marketing company..."></textarea><div class="fhint">Keep under 160 characters</div></div>
+          <div class="fg"><label class="flbl">Keywords (comma-separated)</label><input class="finp" id="seo-keywords" placeholder="pharmaceutical, WHO-GMP, medicines, India, Assam"></div>
+          <div class="fg"><label class="flbl">Social Share Image URL</label><input class="finp" id="seo-og" placeholder="https://..."></div>
+        </div>
+        <button class="btn btn-teal" onclick="saveSEO()">💾 Save SEO</button>
+      </div>
+
+      <!-- ══ WHATSAPP ══ -->
+      <div class="panel" id="panel-whatsapp">
+        <div class="card">
+          <div class="card-title">💬 WhatsApp Integration</div>
+          <div class="card-sub">A floating button will appear on the website allowing visitors to message you directly</div>
+          <div class="fg"><label class="flbl">WhatsApp Number (country code + number, no + or spaces)</label><input class="finp" id="wa-num" placeholder="919876543210" oninput="document.getElementById('wa-prev').textContent=this.value||'XXXXXXXXXX'"><div class="fhint">Example: 919876543210 for +91 98765 43210</div></div>
+          <div class="fg"><label class="flbl">Default Message</label><textarea class="ftextarea" id="wa-msg" rows="3" placeholder="Hello, I am interested in your products..."></textarea></div>
+          <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:.85rem;margin-top:.5rem;">
+            <div style="font-size:.75rem;font-weight:700;color:#166534;margin-bottom:.2rem;">Preview</div>
+            <div style="font-size:.81rem;color:#166534;">wa.me/<span id="wa-prev">XXXXXXXXXX</span></div>
+          </div>
+        </div>
+        <button class="btn btn-teal" onclick="saveWhatsApp()">💾 Save WhatsApp</button>
+      </div>
+
+      <!-- ══ CONTACT ══ -->
+      <div class="panel" id="panel-contact-ed">
+        <div class="card">
+          <div class="card-title">📞 Contact Information</div>
+          <div class="frow">
+            <div class="fg"><label class="flbl">Phone Number</label><input class="finp" id="ce-phone" placeholder="+91 XXXXX XXXXX"></div>
+            <div class="fg"><label class="flbl">Email Address</label><input class="finp" id="ce-email" type="email"></div>
+          </div>
+          <div class="fg"><label class="flbl">Address (use &lt;br&gt; for line breaks)</label><textarea class="ftextarea" id="ce-address" rows="3"></textarea></div>
+          <div class="fg"><label class="flbl">Business Hours</label><input class="finp" id="ce-hours" placeholder="Mon–Sat: 9:00 AM – 6:00 PM"></div>
+        </div>
+        <button class="btn btn-teal" onclick="saveContact()">💾 Save Contact Info</button>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ══ PRODUCT MODAL ══ -->
+<div class="modal-bg" id="prod-modal">
+  <div class="mbox" style="max-width:700px;">
+    <div class="mhdr"><div class="mhdr-title" id="pm-title">Add Product</div><button class="mx" onclick="closeProdModal()">✕</button></div>
+    <div class="mbody">
+      <input type="hidden" id="pm-id">
+      <div class="frow">
+        <div class="fg"><label class="flbl">Product Name *</label><input class="finp" id="pm-name" placeholder="Nirmepan™-DSR"></div>
+        <div class="fg"><label class="flbl">Category *</label>
+          <select class="fselect" id="pm-cat">
+            <option value="gi">GI / Anti-Ulcerants</option><option value="pain">Analgesics / Pain</option>
+            <option value="liver">Liver Care</option><option value="allergy">Allergy / Respiratory</option>
+            <option value="nutrition">Nutritional</option><option value="pediatric">Paediatric</option>
+            <option value="antibiotic">Antibiotics</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label class="flbl">Form / Pack Size *</label><input class="finp" id="pm-form" placeholder="Capsule · 10×10"></div>
+      <div class="fg"><label class="flbl">Active Composition *</label><textarea class="ftextarea" id="pm-comp" rows="2"></textarea></div>
+      <div class="fg"><label class="flbl">Description / Mechanism of Action</label><textarea class="ftextarea" id="pm-desc" rows="3"></textarea></div>
+      <div class="fg"><label class="flbl">Indications (one per line)</label><textarea class="ftextarea" id="pm-inds" rows="5" placeholder="Heart Burn&#10;GERD&#10;Gastric Ulcers"></textarea><div class="fhint">One per line</div></div>
+      <div class="frow" style="margin-bottom:.9rem;">
+        <div class="fg"><label class="flbl">Stock Status</label>
+          <select class="fselect" id="pm-stock">
+            <option value="available">✅ Available</option>
+            <option value="out_of_stock">❌ Out of Stock</option>
+            <option value="coming_soon">🔜 Coming Soon</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:1.1rem;align-items:center;padding-top:1.2rem;">
+          <label class="fcheck"><input type="checkbox" id="pm-feat"> ⭐ Featured</label>
+          <label class="fcheck"><input type="checkbox" id="pm-active" checked> Active</label>
+        </div>
+      </div>
+      <div class="sep"></div>
+      <div class="frow">
+        <div class="fg">
+          <label class="flbl">Primary Image</label>
+          <div class="img-upload" onclick="document.getElementById('pm-img1').click()">
+            <input type="file" id="pm-img1" accept="image/*" onchange="prevImg(this,'pm-img1-prev')">
+            <img class="prev" id="pm-img1-prev">
+            <div class="up-icon">📸</div><div class="up-text">Click to upload</div><div class="up-sub">Auto-compressed to 800px</div>
+          </div>
+          <div class="fg" style="margin-top:.55rem;margin-bottom:0;"><label class="flbl">Or paste URL / path</label><input class="finp" id="pm-img1-url" placeholder="images/product.jpg or https://..."></div>
+        </div>
+        <div class="fg">
+          <label class="flbl">Secondary Image (optional)</label>
+          <div class="img-upload" onclick="document.getElementById('pm-img2').click()">
+            <input type="file" id="pm-img2" accept="image/*" onchange="prevImg(this,'pm-img2-prev')">
+            <img class="prev" id="pm-img2-prev">
+            <div class="up-icon">🖼️</div><div class="up-text">Click to upload (optional)</div><div class="up-sub">Back/strip view</div>
+          </div>
+          <div class="fg" style="margin-top:.55rem;margin-bottom:0;"><label class="flbl">Or paste URL / path</label><input class="finp" id="pm-img2-url" placeholder="images/product-2.jpg or https://..."></div>
+        </div>
+      </div>
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-ghost" onclick="closeProdModal()">Cancel</button>
+      <button class="btn btn-teal" onclick="saveProd()">💾 Save Product</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CERT MODAL ══ -->
+<div class="modal-bg" id="cert-modal">
+  <div class="mbox" style="max-width:480px;">
+    <div class="mhdr"><div class="mhdr-title" id="cm-title">Add Certificate</div><button class="mx" onclick="closeCertModal()">✕</button></div>
+    <div class="mbody">
+      <input type="hidden" id="cm-id">
+      <div class="frow">
+        <div class="fg"><label class="flbl">Name *</label><input class="finp" id="cm-name" placeholder="ISO 9001:2015"></div>
+        <div class="fg"><label class="flbl">Icon (emoji)</label><input class="finp" id="cm-icon" placeholder="✅"></div>
+      </div>
+      <div class="fg"><label class="flbl">Description</label><input class="finp" id="cm-desc" placeholder="Quality Management System"></div>
+      <div class="frow">
+        <div class="fg"><label class="flbl">Badge Colour</label><div style="display:flex;gap:.5rem;"><input type="color" id="cm-color" style="width:44px;height:38px;padding:.2rem;border-radius:6px;border:1px solid var(--border);cursor:pointer;" oninput="document.getElementById('cm-color-t').value=this.value"><input class="finp" id="cm-color-t" placeholder="#0077B6" oninput="document.getElementById('cm-color').value=this.value" style="flex:1;"></div></div>
+        <div class="fg"><label class="flbl">Background Colour</label><div style="display:flex;gap:.5rem;"><input type="color" id="cm-bg" style="width:44px;height:38px;padding:.2rem;border-radius:6px;border:1px solid var(--border);cursor:pointer;" oninput="document.getElementById('cm-bg-t').value=this.value"><input class="finp" id="cm-bg-t" placeholder="#EBF8FF" oninput="document.getElementById('cm-bg').value=this.value" style="flex:1;"></div></div>
+      </div>
+      <div class="fg">
+        <label class="flbl">Logo Image (optional)</label>
+
+        <!-- ── State A: no image → upload prompt ── -->
+        <div id="cm-upload-zone" class="img-upload" onclick="document.getElementById('cm-img').click()" style="min-height:100px;">
+          <input type="file" id="cm-img" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;" onchange="onCertImgPicked(this)">
+          <div class="up-icon">🏅</div>
+          <div class="up-text">Click to upload logo</div>
+          <div class="up-sub">PNG / JPG · transparent background recommended</div>
+        </div>
+
+        <!-- ── State B: adjuster (shown after image picked) ── -->
+        <div id="cm-adjuster" style="display:none;">
+          <div style="font-size:.7rem;font-weight:700;color:var(--mid);margin-bottom:.5rem;letter-spacing:.05em;">
+            ADJUST IMAGE — <span style="color:var(--teal);font-weight:800;">drag to reposition · scroll to zoom</span>
+          </div>
+          <div style="display:flex;gap:.85rem;align-items:flex-start;flex-wrap:wrap;">
+            <!-- Drag canvas -->
+            <div style="flex-shrink:0;">
+              <div style="font-size:.62rem;font-weight:700;color:var(--muted);margin-bottom:.25rem;letter-spacing:.08em;text-transform:uppercase;">Preview (actual output)</div>
+              <div id="cm-adj-wrap" style="width:120px;height:120px;border-radius:12px;overflow:hidden;border:2px solid var(--teal);cursor:move;position:relative;background:#f1f5f9;touch-action:none;user-select:none;">
+                <canvas id="cm-adj-canvas" width="120" height="120" style="display:block;"></canvas>
+              </div>
+              <div style="font-size:.62rem;color:var(--muted);margin-top:.3rem;text-align:center;">120 × 120 px</div>
+            </div>
+            <!-- Controls -->
+            <div style="flex:1;min-width:160px;">
+              <div style="font-size:.68rem;font-weight:800;color:var(--mid);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.4rem;">Zoom</div>
+              <input type="range" id="cm-adj-zoom" min="0.5" max="4" step="0.02" value="1"
+                style="width:100%;accent-color:var(--teal);cursor:pointer;" oninput="adjDraw()">
+              <div style="display:flex;justify-content:space-between;font-size:.65rem;color:var(--muted);margin-top:.1rem;margin-bottom:.85rem;"><span>Fit</span><span>Fill</span><span>4×</span></div>
+
+              <div style="font-size:.68rem;font-weight:800;color:var(--mid);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.4rem;">Fill mode</div>
+              <div style="display:flex;gap:.45rem;flex-wrap:wrap;">
+                <button type="button" class="adj-mode-btn active" id="btn-cover" onclick="adjSetFill('cover')">Cover (fill)</button>
+                <button type="button" class="adj-mode-btn" id="btn-contain" onclick="adjSetFill('contain')">Contain (fit)</button>
+                <button type="button" class="adj-mode-btn" id="btn-pad" onclick="adjSetFill('pad')">Padded</button>
+              </div>
+
+              <div style="margin-top:.85rem;display:flex;gap:.5rem;flex-wrap:wrap;">
+                <button type="button" class="btn btn-ghost btn-sm" onclick="adjReset()">↺ Reset</button>
+                <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('cm-img').click()">📂 Change image</button>
+                <button type="button" class="btn btn-red btn-sm" onclick="removeCertLogo()">🗑 Remove</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- URL paste (always visible, secondary option) -->
+        <div style="margin-top:.6rem;">
+          <input class="finp" id="cm-logo-url" placeholder="Or paste image URL: https://..." style="font-size:.78rem;" oninput="onCertLogoUrlChange(this.value)">
+          <div class="fhint">Pasting a URL will clear any uploaded image</div>
+        </div>
+      </div>
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-ghost" onclick="closeCertModal()">Cancel</button>
+      <button class="btn btn-teal" onclick="saveCert()">💾 Save Certificate</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ENQUIRY DETAIL ══ -->
+<div class="modal-bg" id="enq-modal">
+  <div class="mbox" style="max-width:500px;">
+    <div class="mhdr"><div class="mhdr-title">Enquiry Details</div><button class="mx" onclick="closeEnqModal()">✕</button></div>
+    <div class="mbody">
+      <input type="hidden" id="em-id">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1rem;">
+        <div><div class="flbl">Name</div><div id="em-name" style="font-weight:700;font-size:.9rem;"></div></div>
+        <div><div class="flbl">Phone</div><div id="em-phone" style="font-weight:700;font-size:.9rem;"></div></div>
+        <div><div class="flbl">Email</div><div id="em-email" style="font-size:.85rem;"></div></div>
+        <div><div class="flbl">State</div><div id="em-state" style="font-size:.85rem;"></div></div>
+        <div><div class="flbl">Business Type</div><div id="em-btype" style="font-size:.85rem;"></div></div>
+        <div><div class="flbl">Source</div><div id="em-src" style="font-size:.85rem;"></div></div>
+      </div>
+      <div class="fg"><div class="flbl">Message</div><div id="em-msg" style="background:var(--off);border-radius:8px;padding:.7rem;font-size:.84rem;line-height:1.6;min-height:50px;"></div></div>
+      <div class="sep"></div>
+      <div class="fg"><label class="flbl">Status</label>
+        <select class="fselect" id="em-status">
+          <option value="new">🆕 New</option><option value="contacted">📞 Contacted</option><option value="closed">✅ Closed</option>
+        </select>
+      </div>
+      <div class="fg"><label class="flbl">Admin Notes</label><textarea class="ftextarea" id="em-notes" rows="3" placeholder="Internal notes..."></textarea></div>
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-ghost" onclick="closeEnqModal()">Close</button>
+      <button class="btn btn-teal" onclick="saveEnqStatus()">💾 Update Status</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════
+//  ⚙️  CONFIGURE THESE — from your Supabase project
+// ════════════════════════════════════════════════════
+const SUPABASE_URL      = 'https://gkjleszaidwwefmzyhso.supabase.co';       // e.g. https://xyzxyz.supabase.co
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdramxlc3phaWR3d2VmbXp5aHNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NjE4MTYsImV4cCI6MjA4ODUzNzgxNn0.AbqOTbEZbDrDHkVIef9cIzf6eph0GtHE1sn7jAfs3bY';  // Your anon/public key
+
+// ════════════════════════════════════════════════════
+const IS_LIVE = !SUPABASE_URL.includes('YOUR_');
+let sb = null;
+if (IS_LIVE) { try { sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch(e){} }
+
+// ── Global state ──
+let PRODS = [], CERTS = [], ENQS = [], SETTINGS = {};
+let pm_img1_data = '', pm_img2_data = '', cm_img_data = '';
+let charts = {};
+
+// ════════════════════════════════════════════════════
+//  AUTH
+// ════════════════════════════════════════════════════
+async function checkAuth() {
+  if (!IS_LIVE) { bootAdmin('demo@nirmedixpharma.com'); return; }
+  const { data:{ session } } = await sb.auth.getSession();
+  if (session) bootAdmin(session.user.email);
+}
+
+function bootAdmin(email) {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('sb-email').textContent = email;
+  initAdmin();
+}
+
+async function doLogin() {
+  const email = document.getElementById('l-email').value.trim();
+  const pass  = document.getElementById('l-pass').value;
+  const btn   = document.getElementById('lbtn');
+  const err   = document.getElementById('lerr');
+  err.style.display = 'none';
+  if (!email || !pass) { err.textContent='Enter email and password.'; err.style.display='block'; return; }
+  if (!IS_LIVE) { bootAdmin(email); return; }
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+  if (error) {
+    err.textContent = error.message; err.style.display='block'; btn.disabled=false; btn.textContent='Sign In →';
+  } else {
+    const { data:{ session } } = await sb.auth.getSession();
+    bootAdmin(session.user.email);
+  }
+}
+
+async function doLogout() {
+  if (IS_LIVE && sb) await sb.auth.signOut();
+  location.reload();
+}
+
+// ════════════════════════════════════════════════════
+//  PANEL NAVIGATION
+// ════════════════════════════════════════════════════
+const PANEL_META = {
+  'dashboard':{'h':'Dashboard','s':'Website overview'},
+  'analytics':{'h':'Analytics','s':'Traffic & engagement data'},
+  'products':{'h':'Products','s':'Manage product catalogue'},
+  'certs':{'h':'Certifications','s':'Manage compliance certificates'},
+  'enquiries':{'h':'Enquiries & Leads','s':'Customer enquiries from the website'},
+  'hero':{'h':'Hero Section','s':'Edit main banner content'},
+  'about':{'h':'About Section','s':'Edit about & distributor content'},
+  'stats-ed':{'h':'Stats Bar','s':'Edit the numbers below the hero'},
+  'values':{'h':'Values & Benefits','s':'Edit value cards and distributor benefits'},
+  'company':{'h':'Company Information','s':'Basic company details'},
+  'seo':{'h':'SEO Settings','s':'Search engine & social media settings'},
+  'whatsapp':{'h':'WhatsApp Integration','s':'Configure floating WhatsApp button'},
+  'contact-ed':{'h':'Contact Information','s':'Address, phone, email'},
+};
+
+function go(p) {
+  document.querySelectorAll('.panel').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.sbitem').forEach(el => el.classList.remove('active'));
+  document.getElementById('panel-'+p).classList.add('active');
+  document.querySelector(`.sbitem[data-p="${p}"]`)?.classList.add('active');
+  const m = PANEL_META[p] || {h:p,s:''};
+  document.getElementById('tb-h').textContent = m.h;
+  document.getElementById('tb-s').textContent = m.s;
+  const loaders = {
+    'dashboard': loadDashboard,
+    'analytics': loadAnalytics,
+    'products':  renderProdsTable,
+    'certs':     renderCertsList,
+    'enquiries': loadEnquiries,
+    'hero':      loadHeroPanel,
+    'about':     loadAboutPanel,
+    'stats-ed':  loadStatsPanel,
+    'values':    loadValuesPanel,
+    'company':   loadCompanyPanel,
+    'seo':       loadSEOPanel,
+    'whatsapp':  loadWAPanel,
+    'contact-ed':loadContactPanel,
+  };
+  if (loaders[p]) loaders[p]();
+}
+
+// ════════════════════════════════════════════════════
+//  INIT
+// ════════════════════════════════════════════════════
+async function initAdmin() {
+  await Promise.all([loadProds(), loadCertsData(), loadSettings()]);
+  loadDashboard();
+  loadNewEnqBadge();
+}
+
+async function loadProds() {
+  if (!IS_LIVE) { PRODS = getFallbackProds(); return; }
+  const { data } = await sb.from('products').select('*').order('sort_order').order('created_at');
+  PRODS = data || [];
+}
+async function loadCertsData() {
+  if (!IS_LIVE) { CERTS = getFallbackCerts(); return; }
+  const { data } = await sb.from('certificates').select('*').eq('is_active',true).order('sort_order');
+  CERTS = data || [];
+}
+async function loadSettings() {
+  if (!IS_LIVE) { SETTINGS = getFallbackSettings(); return; }
+  const { data } = await sb.from('site_settings').select('key,value');
+  SETTINGS = {};
+  (data||[]).forEach(r => SETTINGS[r.key] = r.value);
+}
+
+async function loadNewEnqBadge() {
+  if (!IS_LIVE) return;
+  const { count } = await sb.from('enquiries').select('*',{count:'exact',head:true}).eq('status','new');
+  const badge = document.getElementById('new-enq-badge');
+  if (count > 0) { badge.textContent = count; badge.style.display = 'inline'; }
+}
+
+// ════════════════════════════════════════════════════
+//  DASHBOARD
+// ════════════════════════════════════════════════════
+async function loadDashboard() {
+  document.getElementById('kpi-prods').textContent = PRODS.length;
+  document.getElementById('kpi-certs').textContent = CERTS.length;
+
+  if (IS_LIVE && sb) {
+    const [enqRes, viewRes] = await Promise.all([
+      sb.from('enquiries').select('*',{count:'exact',head:true}),
+      sb.from('analytics_events').select('*',{count:'exact',head:true}).eq('event_type','page_view').gte('created_at', new Date(Date.now()-30*864e5).toISOString()),
+    ]);
+    document.getElementById('kpi-enqs').textContent = enqRes.count || 0;
+    document.getElementById('kpi-views').textContent = viewRes.count || 0;
+
+    // Load recent enquiries
+    const { data: recentEnqs } = await sb.from('enquiries').select('*').order('created_at',{ascending:false}).limit(5);
+    renderDashEnqs(recentEnqs || []);
+
+    // Load chart data
+    await renderDashCharts();
+  } else {
+    document.getElementById('kpi-enqs').textContent = '—';
+    document.getElementById('kpi-views').textContent = '—';
+    document.getElementById('dash-enqs').innerHTML = `<div class="empty"><div class="empty-icon">ℹ️</div><div class="empty-h">Connect Supabase to see live data</div></div>`;
+    renderDemoCharts();
+  }
+}
+
+function renderDashEnqs(enqs) {
+  if (!enqs.length) { document.getElementById('dash-enqs').innerHTML = `<div class="empty"><div class="empty-icon">📭</div><div class="empty-h">No enquiries yet</div></div>`; return; }
+  document.getElementById('dash-enqs').innerHTML = enqs.map(e => `
+    <div class="enq-row" onclick="openEnqModal(${JSON.stringify(e).replace(/"/g,'&quot;')})">
+      <div class="enq-av">${(e.name||'?')[0].toUpperCase()}</div>
+      <div style="flex:1;">
+        <div class="enq-name">${e.name||'—'}</div>
+        <div class="enq-meta">${e.phone||''} · ${e.state||''} · ${e.business_type||''}</div>
+        ${e.message ? `<div class="enq-msg">${e.message.slice(0,80)}${e.message.length>80?'…':''}</div>` : ''}
+      </div>
+      <div class="enq-right">
+        <span class="pill pill-${e.status}">${e.status}</span>
+        <div style="font-size:.7rem;color:var(--muted);margin-top:.25rem;">${new Date(e.created_at).toLocaleDateString()}</div>
+      </div>
+    </div>`).join('');
+}
+
+async function renderDashCharts() {
+  // Traffic chart
+  const { data: traffic } = await sb.from('analytics_events')
+    .select('created_at').eq('event_type','page_view')
+    .gte('created_at', new Date(Date.now()-14*864e5).toISOString());
+  const trafficMap = {};
+  for (let i=13;i>=0;i--) {
+    const d = new Date(Date.now()-i*864e5);
+    trafficMap[d.toISOString().slice(0,10)] = 0;
+  }
+  (traffic||[]).forEach(r => { const k=r.created_at.slice(0,10); if(trafficMap[k]!==undefined) trafficMap[k]++; });
+  buildChart('ch-traffic', Object.keys(trafficMap).map(k=>k.slice(5)), Object.values(trafficMap), 'line', 'Page Views');
+
+  // Sources chart
+  const { data: enqSrc } = await sb.from('enquiries').select('source');
+  const srcMap = {};
+  (enqSrc||[]).forEach(r => { srcMap[r.source||'website'] = (srcMap[r.source||'website']||0)+1; });
+  buildChart('ch-sources', Object.keys(srcMap), Object.values(srcMap), 'doughnut', 'Sources');
+}
+
+function renderDemoCharts() {
+  const labels = Array.from({length:14},(_,i)=>{const d=new Date(Date.now()-(13-i)*864e5);return `${d.getMonth()+1}/${d.getDate()}`;});
+  buildChart('ch-traffic', labels, labels.map(()=>Math.floor(Math.random()*40+5)), 'line', 'Page Views');
+  buildChart('ch-sources', ['Website','WhatsApp','Direct'], [12,5,3], 'doughnut', 'Sources');
+}
+
+function buildChart(id, labels, data, type, label) {
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  if (charts[id]) charts[id].destroy();
+  const isLine = type==='line';
+  charts[id] = new Chart(ctx, {
+    type,
+    data: {
+      labels,
+      datasets:[{
+        label,data,
+        backgroundColor: isLine ? 'rgba(0,180,216,.1)' : ['#00B4D8','#10B981','#F59E0B','#8B5CF6','#EF4444'],
+        borderColor: isLine ? '#00B4D8' : undefined,
+        borderWidth: isLine ? 2 : 0,
+        fill: isLine,
+        tension: isLine ? .4 : 0,
+        pointRadius: isLine ? 3 : 0,
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:!isLine,position:'bottom',labels:{font:{size:10},padding:8}}},
+      scales: isLine ? {x:{grid:{display:false},ticks:{font:{size:9}}},y:{beginAtZero:true,grid:{color:'rgba(0,0,0,.05)'},ticks:{font:{size:9}}}} : {}
+    }
+  });
+}
+
+// ════════════════════════════════════════════════════
+//  ANALYTICS PANEL
+// ════════════════════════════════════════════════════
+async function loadAnalytics() {
+  if (!IS_LIVE) {
+    ['ch-views30','ch-enqs30'].forEach(id => {
+      const labels = Array.from({length:30},(_,i)=>{const d=new Date(Date.now()-(29-i)*864e5);return `${d.getMonth()+1}/${d.getDate()}`;});
+      buildChart(id, labels, labels.map(()=>Math.floor(Math.random()*30+2)), 'line', id.includes('views')?'Page Views':'Enquiries');
+    });
+    const topProds = PRODS.slice(0,6);
+    buildChart('ch-topprods', topProds.map(p=>p.name.slice(0,15)), topProds.map(()=>Math.floor(Math.random()*50+5)), 'bar', 'Views');
+    return;
+  }
+  const since30 = new Date(Date.now()-30*864e5).toISOString();
+  const [viewsRes, enqsRes, topRes] = await Promise.all([
+    sb.from('analytics_events').select('created_at').eq('event_type','page_view').gte('created_at',since30),
+    sb.from('enquiries').select('created_at').gte('created_at',since30),
+    sb.from('products').select('name,view_count').order('view_count',{ascending:false}).limit(8),
+  ]);
+  const buildMap30 = (rows) => {
+    const m={};
+    for(let i=29;i>=0;i--){const d=new Date(Date.now()-i*864e5);m[d.toISOString().slice(0,10)]=0;}
+    (rows||[]).forEach(r=>{const k=r.created_at.slice(0,10);if(m[k]!==undefined)m[k]++;});
+    return m;
+  };
+  const vm=buildMap30(viewsRes.data), em=buildMap30(enqsRes.data);
+  const labels30=Object.keys(vm).map(k=>k.slice(5));
+  buildChart('ch-views30',labels30,Object.values(vm),'line','Page Views');
+  buildChart('ch-enqs30',labels30,Object.values(em),'line','Enquiries');
+  const top=topRes.data||[];
+  buildChart('ch-topprods',top.map(p=>p.name.slice(0,14)),top.map(p=>p.view_count||0),'bar','Views');
+}
+
+// ════════════════════════════════════════════════════
+//  PRODUCTS TABLE
+// ════════════════════════════════════════════════════
+const CATS={gi:{l:'GI',cls:'gi'},pain:{l:'Pain',cls:'pain'},liver:{l:'Liver',cls:'liver'},allergy:{l:'Allergy',cls:'allergy'},nutrition:{l:'Nutrition',cls:'nutrition'},pediatric:{l:'Paediatric',cls:'pediatric'},antibiotic:{l:'Antibiotic',cls:'antibiotic'}};
+const STOCK_LABELS={available:'Available',out_of_stock:'Out of Stock',coming_soon:'Coming Soon'};
+
+function renderProdsTable() {
+  const q=(document.getElementById('pfilt')?.value||'').toLowerCase();
+  const cat=(document.getElementById('pfilt-cat')?.value||'');
+  document.getElementById('prod-count').textContent = `${PRODS.length} product${PRODS.length!==1?'s':''}`;
+  const filtered = PRODS.filter(p=>(!cat||p.category===cat) && (!q||p.name.toLowerCase().includes(q)||(p.composition||'').toLowerCase().includes(q)));
+  document.getElementById('prod-tbody').innerHTML = filtered.length ? filtered.map((p,i)=>{
+    const cat2=CATS[p.category]||{l:p.category,cls:'gi'};
+    const imgEl = p.image_url ? `<img class="thumb" src="${p.image_url}" alt="${p.name}" onerror="this.style.display='none'">` : `<div class="thumb-ph">💊</div>`;
+    return `<tr data-id="${p.id}">
+      <td>${imgEl}</td>
+      <td><strong>${p.name}</strong><br><span style="font-size:.72rem;color:var(--muted);">${p.form||''}</span></td>
+      <td><span class="pill pill-${cat2.cls}">${cat2.l}</span></td>
+      <td><span class="pill pill-${p.stock_status||'available'}">${STOCK_LABELS[p.stock_status||'available']||p.stock_status}</span></td>
+      <td style="text-align:center;">${p.is_featured?'⭐':'—'}</td>
+      <td><label class="inline-switch"><input type="checkbox" ${p.is_active?'checked':''} onchange="toggleProd('${p.id}',this.checked)"><span class="sw-sl"></span></label></td>
+      <td>${p.view_count||0}</td>
+      <td><div class="row-acts">
+        <button class="ra ra-edit" onclick='editProd(${JSON.stringify(p).replace(/'/g,"&#39;")})'>Edit</button>
+        <button class="ra ra-del" onclick="deleteProd('${p.id}','${p.name.replace(/'/g,"\\'")}')">Del</button>
+      </div></td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="8"><div class="empty"><div class="empty-icon">💊</div><div class="empty-h">No products found</div></div></td></tr>`;
+}
+
+function openProdModal() {
+  pm_img1_data=''; pm_img2_data='';
+  document.getElementById('pm-title').textContent = 'Add New Product';
+  ['pm-id','pm-name','pm-form','pm-comp','pm-desc','pm-inds','pm-img1-url','pm-img2-url'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('pm-cat').value='gi';
+  document.getElementById('pm-stock').value='available';
+  document.getElementById('pm-feat').checked=false;
+  document.getElementById('pm-active').checked=true;
+  ['pm-img1-prev','pm-img2-prev'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+  document.getElementById('prod-modal').classList.add('open');
+}
+
+function editProd(p) {
+  pm_img1_data=''; pm_img2_data='';
+  document.getElementById('pm-title').textContent = 'Edit Product';
+  document.getElementById('pm-id').value = p.id||'';
+  document.getElementById('pm-name').value = p.name||'';
+  document.getElementById('pm-cat').value = p.category||'gi';
+  document.getElementById('pm-form').value = p.form||'';
+  document.getElementById('pm-comp').value = p.composition||'';
+  document.getElementById('pm-desc').value = p.description||'';
+  const inds = Array.isArray(p.indications) ? p.indications : (typeof p.indications==='string'?JSON.parse(p.indications||'[]'):[]);
+  document.getElementById('pm-inds').value = inds.join('\n');
+  document.getElementById('pm-stock').value = p.stock_status||'available';
+  document.getElementById('pm-feat').checked = !!p.is_featured;
+  document.getElementById('pm-active').checked = p.is_active!==false;
+  document.getElementById('pm-img1-url').value = p.image_url||'';
+  document.getElementById('pm-img2-url').value = p.image_url_2||'';
+  const pr1=document.getElementById('pm-img1-prev');
+  if(p.image_url){pr1.src=p.image_url;pr1.style.display='block';}else pr1.style.display='none';
+  const pr2=document.getElementById('pm-img2-prev');
+  if(p.image_url_2){pr2.src=p.image_url_2;pr2.style.display='block';}else pr2.style.display='none';
+  document.getElementById('prod-modal').classList.add('open');
+}
+
+function closeProdModal(){document.getElementById('prod-modal').classList.remove('open');}
+
+async function saveProd() {
+  const name = document.getElementById('pm-name').value.trim();
+  const form = document.getElementById('pm-form').value.trim();
+  if (!name) { toast('Product name is required','err'); return; }
+  if (!form) { toast('Form/pack size is required','err'); return; }
+  const inds = document.getElementById('pm-inds').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  const img1 = pm_img1_data || document.getElementById('pm-img1-url').value.trim();
+  const img2 = pm_img2_data || document.getElementById('pm-img2-url').value.trim();
+  const payload = {
+    name, category:document.getElementById('pm-cat').value,
+    form, composition:document.getElementById('pm-comp').value,
+    description:document.getElementById('pm-desc').value,
+    indications:JSON.stringify(inds),
+    stock_status:document.getElementById('pm-stock').value,
+    is_featured:document.getElementById('pm-feat').checked,
+    is_active:document.getElementById('pm-active').checked,
+    image_url:img1, image_url_2:img2,
+    sort_order: PRODS.length+1
+  };
+  const id = document.getElementById('pm-id').value;
+  if (IS_LIVE && sb) {
+    let err;
+    if (id) { const r=await sb.from('products').update(payload).eq('id',id); err=r.error; }
+    else    { const r=await sb.from('products').insert(payload); err=r.error; }
+    if (err) { toast('Error: '+err.message,'err'); return; }
+  }
+  await loadProds();
+  renderProdsTable();
+  closeProdModal();
+  toast(id?'Product updated!':'Product added!','ok');
+}
+
+async function deleteProd(id, name) {
+  if (!confirm(`Delete "${name}"?`)) return;
+  if (IS_LIVE && sb) { await sb.from('products').delete().eq('id',id); }
+  PRODS = PRODS.filter(p=>String(p.id)!==String(id));
+  renderProdsTable();
+  toast('Product deleted','ok');
+}
+
+async function toggleProd(id, active) {
+  if (IS_LIVE && sb) { await sb.from('products').update({is_active:active}).eq('id',id); }
+  const p = PRODS.find(x=>String(x.id)===String(id));
+  if (p) p.is_active = active;
+  toast(active?'Product activated':'Product hidden','ok');
+}
+
+// ════════════════════════════════════════════════════
+//  CERTIFICATES
+// ════════════════════════════════════════════════════
+function renderCertsList() {
+  document.getElementById('certs-list').innerHTML = CERTS.length
+    ? CERTS.map((c,i)=>`
+      <div class="cert-admin-card">
+        <div class="cert-icon-big">
+          ${c.logo_url ? `<img src="${c.logo_url}" style="width:38px;height:38px;object-fit:contain;">` : (c.icon||'✅')}
+        </div>
+        <div>
+          <div class="cert-name" style="color:${c.color||'#0077B6'};">${c.name}</div>
+          <div class="cert-desc">${c.description||''}</div>
+        </div>
+        <div class="cert-actions">
+          <button class="btn btn-ghost btn-sm" onclick='editCert(${JSON.stringify(c).replace(/'/g,"&#39;")})'>Edit</button>
+          <button class="btn btn-red btn-sm" onclick="deleteCert('${c.id}')">Del</button>
+        </div>
+      </div>`).join('')
+    : `<div class="empty"><div class="empty-icon">🏅</div><div class="empty-h">No certificates yet</div></div>`;
+}
+
+// ════════════════════════════════════════════════════
+//  CERT IMAGE ADJUSTER ENGINE
+// ════════════════════════════════════════════════════
+let _adjImg = null;
+let _adjX = 0, _adjY = 0, _adjZoom = 1, _adjFill = 'cover';
+let _adjDragging = false, _adjDragSX = 0, _adjDragSY = 0, _adjDragOX = 0, _adjDragOY = 0;
+
+function adjDraw() {
+  const canvas = document.getElementById('cm-adj-canvas');
+  if (!canvas || !_adjImg) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const zoom = parseFloat(document.getElementById('cm-adj-zoom').value);
+  _adjZoom = zoom;
+  // Checkerboard bg
+  ctx.clearRect(0, 0, W, H);
+  for (let y = 0; y < H; y += 12) for (let x = 0; x < W; x += 12) {
+    ctx.fillStyle = ((x/12+y/12)%2===0) ? '#e8eef6' : '#fff';
+    ctx.fillRect(x, y, 12, 12);
+  }
+  const iW = _adjImg.naturalWidth, iH = _adjImg.naturalHeight;
+  let bW, bH;
+  if (_adjFill === 'cover') { const s = Math.max(W/iW, H/iH); bW = iW*s; bH = iH*s; }
+  else if (_adjFill === 'contain') { const s = Math.min(W/iW, H/iH); bW = iW*s; bH = iH*s; }
+  else { const s = Math.min(W/iW, H/iH)*0.82; bW = iW*s; bH = iH*s; }
+  const dW = bW*zoom, dH = bH*zoom;
+  ctx.drawImage(_adjImg, (W-dW)/2+_adjX, (H-dH)/2+_adjY, dW, dH);
+  cm_img_data = canvas.toDataURL('image/png');
+  window._editCertExistingLogo = '';
+}
+
+function adjSetFill(mode) {
+  _adjFill = mode; _adjX = 0; _adjY = 0;
+  document.getElementById('cm-adj-zoom').value = 1;
+  ['cover','contain','pad'].forEach(m => document.getElementById('btn-'+m)?.classList.toggle('active', m===mode));
+  adjDraw();
+}
+function adjReset() { _adjX=0; _adjY=0; document.getElementById('cm-adj-zoom').value=1; adjDraw(); }
+
+function adjSetupEvents() {
+  const wrap = document.getElementById('cm-adj-wrap');
+  if (!wrap || wrap._adjBound) return;
+  wrap._adjBound = true;
+  wrap.addEventListener('mousedown', e => { _adjDragging=true; _adjDragSX=e.clientX; _adjDragSY=e.clientY; _adjDragOX=_adjX; _adjDragOY=_adjY; e.preventDefault(); });
+  window.addEventListener('mousemove', e => { if(!_adjDragging)return; _adjX=_adjDragOX+(e.clientX-_adjDragSX); _adjY=_adjDragOY+(e.clientY-_adjDragSY); adjDraw(); });
+  window.addEventListener('mouseup', ()=>{ _adjDragging=false; });
+  wrap.addEventListener('touchstart', e => { if(e.touches.length===1){_adjDragging=true;_adjDragSX=e.touches[0].clientX;_adjDragSY=e.touches[0].clientY;_adjDragOX=_adjX;_adjDragOY=_adjY;} e.preventDefault(); },{passive:false});
+  wrap.addEventListener('touchmove', e => { if(!_adjDragging||e.touches.length!==1)return; _adjX=_adjDragOX+(e.touches[0].clientX-_adjDragSX); _adjY=_adjDragOY+(e.touches[0].clientY-_adjDragSY); adjDraw(); e.preventDefault(); },{passive:false});
+  wrap.addEventListener('touchend', ()=>{ _adjDragging=false; });
+  wrap.addEventListener('wheel', e => { const el=document.getElementById('cm-adj-zoom'); el.value=Math.min(4,Math.max(0.5,parseFloat(el.value)+(e.deltaY>0?-0.08:0.08))); adjDraw(); e.preventDefault(); },{passive:false});
+}
+
+function adjShowPanel(src) {
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = () => {
+    _adjImg = img; _adjX=0; _adjY=0; _adjFill='cover';
+    document.getElementById('cm-adj-zoom').value = 1;
+    ['cover','contain','pad'].forEach(m => document.getElementById('btn-'+m)?.classList.toggle('active', m==='cover'));
+    document.getElementById('cm-upload-zone').style.display = 'none';
+    document.getElementById('cm-adjuster').style.display = 'block';
+    adjSetupEvents();
+    adjDraw();
+  };
+  img.onerror = () => { toast('Could not load image — check URL','err'); };
+  img.src = src;
+}
+
+function onCertImgPicked(input) {
+  const file = input.files[0]; if(!file) return;
+  window._editCertExistingLogo = '';
+  document.getElementById('cm-logo-url').value = '';
+  const reader = new FileReader();
+  reader.onload = e => adjShowPanel(e.target.result);
+  reader.readAsDataURL(file);
+}
+
+function onCertLogoUrlChange(val) {
+  const v = val.trim(); if(!v) return;
+  cm_img_data = ''; window._editCertExistingLogo = v;
+  adjShowPanel(v);
+}
+
+function removeCertLogo() {
+  cm_img_data = ''; window._editCertExistingLogo = ''; _adjImg = null;
+  document.getElementById('cm-logo-url').value = '';
+  document.getElementById('cm-upload-zone').style.display = 'block';
+  document.getElementById('cm-adjuster').style.display = 'none';
+  toast('Logo removed — save to confirm','ok');
+}
+
+function openCertModal() {
+  cm_img_data = ''; window._editCertExistingLogo = ''; _adjImg = null;
+  document.getElementById('cm-title').textContent = 'Add Certificate';
+  document.getElementById('cm-id').value = '';
+  ['cm-name','cm-icon','cm-desc','cm-logo-url'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('cm-color').value='#0077B6'; document.getElementById('cm-color-t').value='#0077B6';
+  document.getElementById('cm-bg').value='#EBF8FF'; document.getElementById('cm-bg-t').value='#EBF8FF';
+  document.getElementById('cm-upload-zone').style.display = 'block';
+  document.getElementById('cm-adjuster').style.display = 'none';
+  document.getElementById('cert-modal').classList.add('open');
+}
+
+function editCert(c) {
+  cm_img_data = ''; window._editCertExistingLogo = c.logo_url || ''; _adjImg = null;
+  document.getElementById('cm-title').textContent = 'Edit Certificate';
+  document.getElementById('cm-id').value = c.id||'';
+  document.getElementById('cm-name').value = c.name||'';
+  document.getElementById('cm-icon').value = c.icon||'';
+  document.getElementById('cm-desc').value = c.description||'';
+  const logoUrlField = document.getElementById('cm-logo-url');
+  if(logoUrlField) logoUrlField.value = (c.logo_url&&!c.logo_url.startsWith('data:')) ? c.logo_url : '';
+  const col=c.color||'#0077B6'; document.getElementById('cm-color').value=col; document.getElementById('cm-color-t').value=col;
+  const bg=c.bg_color||'#EBF8FF'; document.getElementById('cm-bg').value=bg; document.getElementById('cm-bg-t').value=bg;
+  if (c.logo_url) {
+    document.getElementById('cm-upload-zone').style.display = 'none';
+    document.getElementById('cm-adjuster').style.display = 'block';
+    adjShowPanel(c.logo_url);
+  } else {
+    document.getElementById('cm-upload-zone').style.display = 'block';
+    document.getElementById('cm-adjuster').style.display = 'none';
+  }
+  document.getElementById('cert-modal').classList.add('open');
+}
+
+function closeCertModal() { document.getElementById('cert-modal').classList.remove('open'); }
+
+async function saveCert() {
+  const name = document.getElementById('cm-name').value.trim();
+  if (!name) { toast('Name is required','err'); return; }
+  if (_adjImg) adjDraw(); // bake final canvas output
+  const finalLogo = cm_img_data || window._editCertExistingLogo || '';
+  const payload = { name, description:document.getElementById('cm-desc').value, icon:document.getElementById('cm-icon').value||'✅', color:document.getElementById('cm-color-t').value||document.getElementById('cm-color').value, bg_color:document.getElementById('cm-bg-t').value||document.getElementById('cm-bg').value, logo_url:finalLogo, is_active:true, sort_order:CERTS.length+1 };
+  const id = document.getElementById('cm-id').value;
+  if (IS_LIVE&&sb) {
+    let err;
+    if (id) { const r=await sb.from('certificates').update(payload).eq('id',id); err=r.error; }
+    else    { const r=await sb.from('certificates').insert(payload); err=r.error; }
+    if (err) { toast('Error: '+err.message,'err'); return; }
+  }
+  await loadCertsData(); renderCertsList(); closeCertModal();
+  toast(id?'Certificate updated!':'Certificate added!','ok');
+}
+
+async function deleteCert(id) {
+  if (!confirm('Delete this certificate?')) return;
+  if (IS_LIVE&&sb) await sb.from('certificates').delete().eq('id',id);
+  CERTS = CERTS.filter(c=>String(c.id)!==String(id));
+  renderCertsList(); toast('Deleted','ok');
+}
+
+
+
+// ════════════════════════════════════════════════════
+//  ENQUIRIES
+// ════════════════════════════════════════════════════
+async function loadEnquiries() {
+  if (!IS_LIVE) { document.getElementById('enq-tbody').innerHTML=`<tr><td colspan="8"><div class="empty"><div class="empty-icon">ℹ️</div><div class="empty-h">Connect Supabase to see enquiries</div></div></td></tr>`; return; }
+  const filter=document.getElementById('enq-filter')?.value||'';
+  let q=sb.from('enquiries').select('*').order('created_at',{ascending:false}).limit(100);
+  if(filter) q=q.eq('status',filter);
+  const{data}=await q;
+  ENQS=data||[];
+  document.getElementById('enq-count').textContent=`${ENQS.length} enquir${ENQS.length!==1?'ies':'y'}`;
+  document.getElementById('enq-tbody').innerHTML=ENQS.length?ENQS.map(e=>`
+    <tr style="cursor:pointer;" onclick='openEnqModal(${JSON.stringify(e).replace(/"/g,"&quot;")})'>
+      <td><strong>${e.name||'—'}</strong></td>
+      <td>${e.phone||'—'}</td>
+      <td>${e.state||'—'}</td>
+      <td>${e.business_type||'—'}</td>
+      <td><span class="pill pill-${e.status}">${e.status||'new'}</span></td>
+      <td style="font-size:.76rem;color:var(--muted);">${new Date(e.created_at).toLocaleDateString()}</td>
+      <td><div class="row-acts">
+        <button class="ra ra-edit" onclick='event.stopPropagation();openEnqModal(${JSON.stringify(e).replace(/"/g,"&quot;")})'>View</button>
+      </div></td>
+    </tr>`).join(''):
+    `<tr><td colspan="8"><div class="empty"><div class="empty-icon">📭</div><div class="empty-h">No enquiries found</div></div></td></tr>`;
+}
+
+function openEnqModal(e) {
+  if(typeof e==='string') e=JSON.parse(e);
+  document.getElementById('em-id').value=e.id||'';
+  document.getElementById('em-name').textContent=e.name||'—';
+  document.getElementById('em-phone').textContent=e.phone||'—';
+  document.getElementById('em-email').textContent=e.email||'—';
+  document.getElementById('em-state').textContent=e.state||'—';
+  document.getElementById('em-btype').textContent=e.business_type||'—';
+  document.getElementById('em-src').textContent=e.source||'website';
+  document.getElementById('em-msg').textContent=e.message||'No message';
+  document.getElementById('em-status').value=e.status||'new';
+  document.getElementById('em-notes').value=e.admin_notes||'';
+  document.getElementById('enq-modal').classList.add('open');
+}
+function closeEnqModal(){document.getElementById('enq-modal').classList.remove('open');}
+async function saveEnqStatus() {
+  const id=document.getElementById('em-id').value;
+  const status=document.getElementById('em-status').value;
+  const notes=document.getElementById('em-notes').value;
+  if(IS_LIVE&&sb)await sb.from('enquiries').update({status,admin_notes:notes}).eq('id',id);
+  closeEnqModal();loadEnquiries();toast('Enquiry updated!','ok');
+}
+function exportEnquiries() {
+  if(!ENQS.length){toast('No enquiries to export','err');return;}
+  const headers=['Name','Phone','Email','State','Business Type','Source','Status','Message','Date'];
+  const rows=ENQS.map(e=>[e.name,e.phone,e.email,e.state,e.business_type,e.source,e.status,(e.message||'').replace(/,/g,';'),new Date(e.created_at).toLocaleDateString()]);
+  const csv=[headers,...rows].map(r=>r.map(v=>`"${v||''}"`).join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download=`nirmedix-enquiries-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();toast('CSV exported!','ok');
+}
+
+// ════════════════════════════════════════════════════
+//  CONTENT PANELS (Settings)
+// ════════════════════════════════════════════════════
+function getS(key,def=''){const c=SETTINGS['company']||{};return c[key]||def;}
+function getSeo(key,def=''){const s=SETTINGS['seo']||{};return s[key]||def;}
+
+function loadHeroPanel(){document.getElementById('h-title').value=getS('heroTitle');document.getElementById('h-desc').value=getS('heroDesc');document.getElementById('h-prod-title').value=getS('productsTitle');}
+async function saveHero(){
+  const c=SETTINGS['company']||{};
+  c.heroTitle=document.getElementById('h-title').value;
+  c.heroDesc=document.getElementById('h-desc').value;
+  c.productsTitle=document.getElementById('h-prod-title').value;
+  await saveSetting('company',c);toast('Hero saved!','ok');
+}
+
+function loadAboutPanel(){document.getElementById('a-title').value=getS('aboutTitle');document.getElementById('a-desc').value=getS('aboutDesc');document.getElementById('a-certs-desc').value=getS('certsDesc');document.getElementById('a-dist-title').value=getS('distTitle');document.getElementById('a-dist-desc').value=getS('distDesc');}
+async function saveAbout(){
+  const c=SETTINGS['company']||{};
+  c.aboutTitle=document.getElementById('a-title').value;
+  c.aboutDesc=document.getElementById('a-desc').value;
+  c.certsDesc=document.getElementById('a-certs-desc').value;
+  c.distTitle=document.getElementById('a-dist-title').value;
+  c.distDesc=document.getElementById('a-dist-desc').value;
+  await saveSetting('company',c);toast('About saved!','ok');
+}
+
+async function loadStatsPanel() {
+  let stats=[];
+  if(IS_LIVE&&sb){const{data}=await sb.from('stats').select('*').order('sort_order');stats=data||[];}
+  else stats=[{id:'1',num:'15+',label:'Products'},{id:'2',num:'8+',label:'Therapeutic Areas'},{id:'3',num:'100+',label:'Distributors'},{id:'4',num:'WHO-GMP',label:'Certified Source'}];
+  document.getElementById('stats-rows').innerHTML=stats.map((s,i)=>`
+    <div style="display:grid;grid-template-columns:1fr 1.5fr auto;gap:.7rem;align-items:end;margin-bottom:.7rem;">
+      <div class="fg" style="margin:0;"><label class="flbl">Value</label><input class="finp" id="stat-num-${i}" value="${s.num||''}"></div>
+      <div class="fg" style="margin:0;"><label class="flbl">Label</label><input class="finp" id="stat-lbl-${i}" value="${s.label||s.lbl||''}"></div>
+      <button class="btn btn-red btn-sm" onclick="removeStatRow(this,'${s.id}')">✕</button>
+    </div>`).join('');
+  window._statsData=stats;
+}
+function addStatRow(){
+  const i=(window._statsData||[]).length;
+  window._statsData=(window._statsData||[]);window._statsData.push({id:'new-'+Date.now(),num:'',label:''});
+  document.getElementById('stats-rows').insertAdjacentHTML('beforeend',`
+    <div style="display:grid;grid-template-columns:1fr 1.5fr auto;gap:.7rem;align-items:end;margin-bottom:.7rem;" id="stat-new-${i}">
+      <div class="fg" style="margin:0;"><label class="flbl">Value</label><input class="finp" id="stat-num-${i}" value=""></div>
+      <div class="fg" style="margin:0;"><label class="flbl">Label</label><input class="finp" id="stat-lbl-${i}" value=""></div>
+      <button class="btn btn-red btn-sm" onclick="this.parentElement.remove()">✕</button>
+    </div>`);
+}
+function removeStatRow(btn,id){btn.parentElement.remove();}
+async function saveStats(){
+  const rows=document.querySelectorAll('[id^="stat-num-"]');
+  const stats=Array.from(rows).map((_,i)=>({num:document.getElementById('stat-num-'+i)?.value||'',label:document.getElementById('stat-lbl-'+i)?.value||'',sort_order:i+1})).filter(s=>s.num||s.label);
+  if(IS_LIVE&&sb){await sb.from('stats').delete().neq('id','00000000-0000-0000-0000-000000000000');await sb.from('stats').insert(stats);}
+  toast('Stats saved!','ok');
+}
+
+async function loadValuesPanel(){
+  let vals=[],bens=[];
+  if(IS_LIVE&&sb){const[v,b]=await Promise.all([sb.from('company_values').select('*').order('sort_order'),sb.from('dist_benefits').select('*').order('sort_order')]);vals=v.data||[];bens=b.data||[];}
+  else{vals=[{icon:'🎯',title:'Quality Assurance',description:'WHO-GMP certified manufacturers.'},{icon:'🚀',title:'Pan-India Reach',description:'Multi-state distribution.'},{icon:'🤝',title:'Partner Support',description:'Dedicated support team.'},{icon:'💊',title:'Diverse Portfolio',description:'Wide therapeutic range.'}];bens=[{icon:'💰',title:'Competitive Margins',description:'Best-in-industry margins.'},{icon:'📦',title:'Fast Supply',description:'Consistent stock.'},{icon:'🎓',title:'Product Training',description:'Knowledge support.'},{icon:'📋',title:'Regulatory Support',description:'Full documentation.'}];}
+  window._vals=vals;window._bens=bens;
+  const ve=document.getElementById('values-ed');
+  ve.innerHTML=vals.map((v,i)=>`<div style="display:grid;grid-template-columns:60px 1fr 2fr;gap:.7rem;align-items:end;margin-bottom:.7rem;"><div class="fg" style="margin:0;"><label class="flbl">Icon</label><input class="finp" id="v-icon-${i}" value="${v.icon||''}"></div><div class="fg" style="margin:0;"><label class="flbl">Title</label><input class="finp" id="v-title-${i}" value="${v.title||''}"></div><div class="fg" style="margin:0;"><label class="flbl">Description</label><input class="finp" id="v-desc-${i}" value="${v.description||v.desc||''}"></div></div>`).join('');
+  const be=document.getElementById('benefits-ed');
+  be.innerHTML=bens.map((b,i)=>`<div style="display:grid;grid-template-columns:60px 1fr 2fr;gap:.7rem;align-items:end;margin-bottom:.7rem;"><div class="fg" style="margin:0;"><label class="flbl">Icon</label><input class="finp" id="b-icon-${i}" value="${b.icon||''}"></div><div class="fg" style="margin:0;"><label class="flbl">Title</label><input class="finp" id="b-title-${i}" value="${b.title||''}"></div><div class="fg" style="margin:0;"><label class="flbl">Description</label><input class="finp" id="b-desc-${i}" value="${b.description||b.desc||''}"></div></div>`).join('');
+}
+async function saveValues(){
+  const n=(window._vals||[]).length;
+  const rows=Array.from({length:n},(_,i)=>({icon:document.getElementById('v-icon-'+i)?.value,title:document.getElementById('v-title-'+i)?.value,description:document.getElementById('v-desc-'+i)?.value,sort_order:i+1}));
+  if(IS_LIVE&&sb){await sb.from('company_values').delete().neq('id','00000000-0000-0000-0000-000000000000');await sb.from('company_values').insert(rows);}
+  toast('Values saved!','ok');
+}
+async function saveBenefits(){
+  const n=(window._bens||[]).length;
+  const rows=Array.from({length:n},(_,i)=>({icon:document.getElementById('b-icon-'+i)?.value,title:document.getElementById('b-title-'+i)?.value,description:document.getElementById('b-desc-'+i)?.value,sort_order:i+1}));
+  if(IS_LIVE&&sb){await sb.from('dist_benefits').delete().neq('id','00000000-0000-0000-0000-000000000000');await sb.from('dist_benefits').insert(rows);}
+  toast('Benefits saved!','ok');
+}
+
+function loadCompanyPanel(){document.getElementById('co-name').value=getS('name');document.getElementById('co-fullname').value=getS('fullName');document.getElementById('co-tagline').value=getS('tagline');document.getElementById('co-footer-desc').value=getS('footerDesc');document.getElementById('co-copyright').value=getS('copyright');}
+async function saveCompany(){
+  const c=SETTINGS['company']||{};
+  c.name=document.getElementById('co-name').value;c.fullName=document.getElementById('co-fullname').value;
+  c.tagline=document.getElementById('co-tagline').value;c.footerDesc=document.getElementById('co-footer-desc').value;
+  c.copyright=document.getElementById('co-copyright').value;
+  await saveSetting('company',c);toast('Company info saved!','ok');
+}
+
+function loadSEOPanel(){document.getElementById('seo-title').value=getSeo('title');document.getElementById('seo-desc').value=getSeo('description');document.getElementById('seo-keywords').value=getSeo('keywords');document.getElementById('seo-og').value=getSeo('ogImage');}
+async function saveSEO(){const s={title:document.getElementById('seo-title').value,description:document.getElementById('seo-desc').value,keywords:document.getElementById('seo-keywords').value,ogImage:document.getElementById('seo-og').value};await saveSetting('seo',s);toast('SEO settings saved!','ok');}
+
+function loadWAPanel(){const c=SETTINGS['company']||{};document.getElementById('wa-num').value=c.whatsapp||'';document.getElementById('wa-msg').value=c.whatsapp_msg||'';document.getElementById('wa-prev').textContent=c.whatsapp||'XXXXXXXXXX';}
+async function saveWhatsApp(){const c=SETTINGS['company']||{};c.whatsapp=document.getElementById('wa-num').value;c.whatsapp_msg=document.getElementById('wa-msg').value;await saveSetting('company',c);toast('WhatsApp settings saved!','ok');}
+
+function loadContactPanel(){document.getElementById('ce-phone').value=getS('phone');document.getElementById('ce-email').value=getS('email');document.getElementById('ce-address').value=getS('address');document.getElementById('ce-hours').value=getS('hours');}
+async function saveContact(){const c=SETTINGS['company']||{};c.phone=document.getElementById('ce-phone').value;c.email=document.getElementById('ce-email').value;c.address=document.getElementById('ce-address').value;c.hours=document.getElementById('ce-hours').value;await saveSetting('company',c);toast('Contact info saved!','ok');}
+
+async function saveSetting(key,value){
+  SETTINGS[key]=value;
+  if(!IS_LIVE||!sb)return;
+  await sb.from('site_settings').upsert({key,value},{onConflict:'key'});
+}
+
+// ════════════════════════════════════════════════════
+//  IMAGE UPLOAD (with compression)
+// ════════════════════════════════════════════════════
+function prevImg(input, prevId) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    // Compress to max 800px
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const MAX = 800;
+      let w=img.width, h=img.height;
+      if(w>MAX){h=Math.round(h*MAX/w);w=MAX;}
+      else if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
+      canvas.width=w; canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      const compressed = canvas.toDataURL('image/jpeg',0.85);
+      const prevEl = document.getElementById(prevId);
+      if(prevEl){prevEl.src=compressed;prevEl.style.display='block';}
+      // Store in the right variable
+      if(input.id==='pm-img1') pm_img1_data=compressed;
+      else if(input.id==='pm-img2') pm_img2_data=compressed;
+      else if(input.id==='cm-img') cm_img_data=compressed;
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ════════════════════════════════════════════════════
+//  TOAST
+// ════════════════════════════════════════════════════
+function toast(msg, type='ok'){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.className=type;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+// ════════════════════════════════════════════════════
+//  FALLBACK DATA (demo mode)
+// ════════════════════════════════════════════════════
+function getFallbackProds(){return[{id:'1',name:'Nirmepan™-DSR',category:'gi',form:'Capsule · 10×10',composition:'Pantoprazole 40mg + Domperidone 30mg',image_url:'images/nirmepan-dsr.jpg',is_featured:true,is_active:true,stock_status:'available',view_count:42},{id:'2',name:'Mulvitadix™-L',category:'nutrition',form:'Syrup · 200 ml',composition:'Lycopene + Multivitamins',image_url:'images/mulvitadix-l.jpg',is_featured:true,is_active:true,stock_status:'available',view_count:38},{id:'3',name:'Nircalci™-XT',category:'nutrition',form:'Tablet · 10×10',composition:'Calcium Citrate Malate + D3 + K2',image_url:'images/nircalci-xt.jpg',is_featured:true,is_active:true,stock_status:'available',view_count:31},{id:'4',name:'Aclodix™-TH4',category:'pain',form:'Tablet · 10×10',composition:'Aceclofenac 100mg + Thiocolchicoside 4mg',image_url:'images/aclodix-th4.jpg',is_featured:false,is_active:true,stock_status:'available',view_count:24},{id:'5',name:'Montinir™-L',category:'allergy',form:'Tablet · 10×10',composition:'Levocetirizine 5mg + Montelukast 10mg',image_url:'images/montinir-l-tab.jpg',is_featured:false,is_active:true,stock_status:'available',view_count:19}];}
+function getFallbackCerts(){return[{id:'1',name:'WHO-GMP',description:'World Health Organization GMP',icon:'🏥',color:'#0077B6',bg_color:'#EBF8FF'},{id:'2',name:'ISO 9001:2015',description:'Quality Management System',icon:'✅',color:'#059669',bg_color:'#ECFDF5'},{id:'3',name:'FSSAI',description:'Food Safety & Standards Authority',icon:'🛡️',color:'#D97706',bg_color:'#FFFBEB'},{id:'4',name:'GMP',description:'Good Manufacturing Practice',icon:'⚗️',color:'#7C3AED',bg_color:'#F5F3FF'}];}
+function getFallbackSettings(){return{company:{name:'Nirmedix Pharma',fullName:'Nirmedix Pharma Pvt. Ltd.',tagline:'Trusted Pharmaceutical Partner',heroTitle:"Delivering <span class='accent'>Premium</span> Healthcare Across India",heroDesc:'Nirmedix Pharma Pvt. Ltd. sources WHO-GMP certified formulations across India.',aboutTitle:'Your Trusted Pharma Marketing Partner',aboutDesc:'Growing pharmaceutical marketing company dedicated to quality and compliance.',distTitle:'Partner With Us &amp; Grow Your Business',distDesc:'Competitive margins, dedicated support, comprehensive product range.',address:'Namghar Road, Barpeta Road,<br>Assam — 781315',phone:'+91 XXXXX XXXXX',whatsapp:'91XXXXXXXXXX',whatsapp_msg:'Hello, I am interested in your products.',email:'info@nirmedixpharma.com',hours:'Mon–Sat: 9:00 AM – 6:00 PM',footerDesc:'Pharmaceutical marketing company sourcing WHO-GMP formulations.',copyright:'© 2025 Nirmedix Pharma Pvt. Ltd. All rights reserved.'},seo:{title:'Nirmedix Pharma Pvt. Ltd. — Pharmaceutical Excellence',description:'Premium pharmaceutical marketing company.',keywords:'pharmaceutical,WHO-GMP,medicines,India,Assam',ogImage:''}};}
+
+// ════════════════════════════════════════════════════
+//  BOOT
+// ════════════════════════════════════════════════════
+checkAuth();
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+supabase - sahadeep07@gmail.com
+
+Admin -
+deep.saha22@gmail.com
+Ambi@2202!99!
+
+
+SUPABASE_URL     = 'https://gkjleszaidwwefmzyhso.supabase.co';      // e.g. https://abcxyz.supabase.co
+SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_ptHLzLkXivGwGczkfL-H3g_1J7MtHZA';
+SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdramxlc3phaWR3d2VmbXp5aHNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI5NjE4MTYsImV4cCI6MjA4ODUzNzgxNn0.AbqOTbEZbDrDHkVIef9cIzf6eph0GtHE1sn7jAfs3bY'; // Your project's anon/public key
