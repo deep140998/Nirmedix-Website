@@ -884,7 +884,7 @@ function renderStats(stats = []) {
 function renderAbout(c, values = []) {
   document.getElementById('about-title').innerHTML = c.aboutTitle || '';
   document.getElementById('about-desc').textContent = c.aboutDesc || '';
-  const stats = [{num:'15+',lbl:'Products',icon:'💊'},{num:'100+',lbl:'Distributors',icon:'🤝'},{num:'8+',lbl:'Therapeutic Areas',icon:'🔬'}];
+  const stats = [{num:'40+',lbl:'Products',icon:'💊'},{num:'100+',lbl:'Distributors',icon:'🤝'},{num:'8+',lbl:'Therapeutic Areas',icon:'🔬'}];
   document.getElementById('about-visual').innerHTML = stats.map(s => `
     <div class="about-card">
       <div class="about-card-icon">${s.icon}</div>
